@@ -1,0 +1,5 @@
+# String.srv
+string message
+
+---
+bool success

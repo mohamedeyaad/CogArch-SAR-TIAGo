@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+import rospy
+import cv2
+import numpy as np
+from sensor_msgs.msg import Image
+from audio_common_msgs.msg import AudioData
+from nav_msgs.msg import Odometry
+from std_msgs.msg import Header
+from std_msgs.msg import String
+from cv_bridge import CvBridge
+
+
+class VictimDetector:
+	def __init__(self):
+		rospy.Subscriber("/xtion/rgb/image_raw", Image, self.rgb_callback)
+		rospy.Subscriber("/xtion/depth/image_raw", Image, self.depth_callback)
+		rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.odom_callback)
+		rospy.Subscriber("/audio", AudioData, self.audio_callback)
+		self.victim_loc_pub = rospy.Publisher("/victim_location", Odometry, queue_size=10)
+		self.victim_alert_pub = rospy.Publisher("/victim_alert", String, queue_size=10)
+		self.current_odom = None
+		self.current_depth = None
+
+	def rgb_callback(self, rgb_msg):
+		rospy.loginfo("RGB image received!")
+		see_victim = self.detect_victim_rgb(rgb_msg)
+		rospy.loginfo(f"Victim detected: {see_victim}")
+		if see_victim:
+			self.report_victim()  
+        
+	def audio_callback(self, audio_msg):
+		rospy.loginfo("Audio received!")
+		hear_victim = self.detect_victim_audio(audio_msg, threshold=500)
+		rospy.loginfo(f"Victim detected: {hear_victim}")
+		if hear_victim:
+			self.report_victim()
+           
+	def odom_callback(self, odom_msg):
+	    self.current_odom = odom_msg
+	    rospy.loginfo("Odometry received!")    
+           
+	def depth_callback(self, depth_msg):
+		rospy.loginfo("Depth data received!")  
+		try:
+			bridge = CvBridge()
+			self.latest_depth_image = bridge.imgmsg_to_cv2(depth_msg, desired_encoding="passthrough")
+			self.depth_header = depth_msg.header
+			
+		except Exception as e:
+			rospy.logerr(f"Failed to convert depth image: {e}")
+			self.latest_depth_image = None
+
+	def detect_victim_rgb(self, rgb_msg):
+	    try:
+	        # Convert ROS Image to OpenCV
+	        img = np.frombuffer(rgb_msg.data, dtype=np.uint8).reshape(rgb_msg.height, rgb_msg.width, -1)
+            
+	        # Handle possible alpha channel (4 channels)
+	        if img.shape[2] == 4:
+	            img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+         
+	        # Detect red regions
+	        lower_red = np.array([0, 0, 100])
+	        upper_red = np.array([100, 100, 255])  # Wider range
+	        mask = cv2.inRange(img, lower_red, upper_red)
+            
+	        # Debug: Save images
+	        cv2.imwrite("/tmp/latest_image.png", img)
+	        cv2.imwrite("/tmp/red_mask.png", mask)
+            
+	        return cv2.countNonZero(mask) > 100  # Lower threshold for testing
+	    except Exception as e:
+	        rospy.logerr(f"Detection failed: {e}")
+	        return False   
+        
+	def detect_victim_audio(self, audio_msg, threshold=500):
+		try:
+			# Convert audio data from ROS AudioData message (uint8 array) to bytes
+			audio_bytes = bytes(audio_msg.data)
+
+			# Try interpreting the bytes as signed 16-bit PCM audio
+			audio_np = np.frombuffer(audio_bytes, dtype=np.int16)
+
+			# Compute the mean absolute amplitude (volume indicator)
+			volume = np.mean(np.abs(audio_np))
+
+			# Debug: Log or save volume level (optional)
+			# rospy.loginfo(f"Current volume level: {volume}")
+
+			# Return True if the volume exceeds the threshold
+			return volume > threshold
+
+		except Exception as e:
+			# Log any exception that occurs during processing
+			rospy.logerr(f"Audio volume detection failed: {e}")
+			return False
+
+
+	def report_victim(self):
+		alert_message = "Victim detected!"
+		self.victim_alert_pub.publish(alert_message)
+		rospy.loginfo("Published alert message!")
+		
+		# Check if depth image is available
+		if hasattr(self, 'latest_depth_image') and self.latest_depth_image is not None:
+			depth_img = self.latest_depth_image
+			
+			# Assume the victim is at the center of the image
+			center_x = depth_img.shape[1] // 2
+			center_y = depth_img.shape[0] // 2
+
+			# Read the depth value from the center of the image
+			dummy_depth = depth_img[center_y, center_x]
+
+			# Debug: Log the dummy depth value (optional)
+			# rospy.loginfo(f"Dummy depth value at center: {dummy_depth}")	
+			
+			victim_odom = Odometry()
+			victim_odom.header = Header(stamp=rospy.Time.now(), frame_id="xtion_depth_optical_frame")
+			
+			victim_odom.pose.pose.position.x = 1.0 # dummy value
+			victim_odom.pose.pose.position.y = 0.0
+			victim_odom.pose.pose.position.z = float(dummy_depth) / 1000.0 if dummy_depth > 0 else 1.0
+			victim_odom.pose.pose.orientation.w = 1.0 
+			
+			self.victim_loc_pub.publish(victim_odom)
+			rospy.loginfo("Published victim location!")
+		else:
+			rospy.logwarn("Victim detected, but odometry is missing!")
+
+if __name__ == "__main__":
+    rospy.init_node("victim_detector")
+    detector = VictimDetector()
+    rospy.spin()

@@ -11,7 +11,25 @@ from cv_bridge import CvBridge
 
 
 class VictimDetector:
+	"""
+	A ROS-based victim detection class using RGB images, depth data, audio, and odometry.
+
+	Subscribes to:
+        - /xtion/rgb/image_raw: RGB camera feed.
+        - /xtion/depth/image_raw: Depth image feed.
+        - /mobile_base_controller/odom: Robot odometry.
+        - /audio: Audio data.
+
+    Publishes:
+        - /victim_location: Estimated location of detected victim.
+        - /victim_alert: Alert message when a victim is detected.
+    """
+    
 	def __init__(self):
+		"""
+        Initializes the VictimDetector class by subscribing to the necessary topics
+        and setting up publishers.
+		"""	
 		rospy.Subscriber("/xtion/rgb/image_raw", Image, self.rgb_callback)
 		rospy.Subscriber("/xtion/depth/image_raw", Image, self.depth_callback)
 		rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.odom_callback)
@@ -22,24 +40,48 @@ class VictimDetector:
 		self.current_depth = None
 
 	def rgb_callback(self, rgb_msg):
+		"""
+        Callback for RGB image messages.
+
+        :param rgb_msg: Image message containing RGB data.
+        :type rgb_msg: sensor_msgs.msg.Image
+		"""
 		rospy.loginfo("RGB image received!")
 		see_victim = self.detect_victim_rgb(rgb_msg)
-		rospy.loginfo(f"Victim detected: {see_victim}")
+		rospy.loginfo(f"Victim detected by camera: {see_victim}")
 		if see_victim:
 			self.report_victim()  
         
 	def audio_callback(self, audio_msg):
+		"""
+        Callback for audio messages.
+
+        :param audio_msg: AudioData message containing sound samples.
+        :type audio_msg: audio_common_msgs.msg.AudioData
+		"""
 		rospy.loginfo("Audio received!")
 		hear_victim = self.detect_victim_audio(audio_msg, threshold=500)
-		rospy.loginfo(f"Victim detected: {hear_victim}")
+		rospy.loginfo(f"Victim detected by audio: {hear_victim}")
 		if hear_victim:
 			self.report_victim()
            
 	def odom_callback(self, odom_msg):
+		"""
+        Callback for odometry messages.
+
+        :param odom_msg: Odometry data.
+        :type odom_msg: nav_msgs.msg.Odometry
+		"""
 	    self.current_odom = odom_msg
 	    rospy.loginfo("Odometry received!")    
            
 	def depth_callback(self, depth_msg):
+		"""
+        Callback for depth image messages.
+
+        :param depth_msg: Depth image.
+        :type depth_msg: sensor_msgs.msg.Image
+		"""
 		rospy.loginfo("Depth data received!")  
 		try:
 			bridge = CvBridge()
@@ -51,6 +93,14 @@ class VictimDetector:
 			self.latest_depth_image = None
 
 	def detect_victim_rgb(self, rgb_msg):
+		"""
+        Detects a victim using RGB image data by looking for red color blobs.
+
+        :param rgb_msg: Image message with RGB data.
+        :type rgb_msg: sensor_msgs.msg.Image
+        :return: True if a victim is detected, otherwise False.
+        :rtype: bool
+		"""
 	    try:
 	        # Convert ROS Image to OpenCV
 	        img = np.frombuffer(rgb_msg.data, dtype=np.uint8).reshape(rgb_msg.height, rgb_msg.width, -1)
@@ -74,6 +124,16 @@ class VictimDetector:
 	        return False   
         
 	def detect_victim_audio(self, audio_msg, threshold=500):
+		"""
+        Detects a victim using audio data based on volume threshold.
+
+        :param audio_msg: AudioData message.
+        :type audio_msg: audio_common_msgs.msg.AudioData
+        :param threshold: Volume threshold for detection.
+        :type threshold: int
+        :return: True if volume exceeds threshold, otherwise False.
+        :rtype: bool
+		"""
 		try:
 			# Convert audio data from ROS AudioData message (uint8 array) to bytes
 			audio_bytes = bytes(audio_msg.data)
@@ -97,6 +157,9 @@ class VictimDetector:
 
 
 	def report_victim(self):
+		"""
+        Publishes a victim alert and location if depth image data is available.
+		"""
 		alert_message = "Victim detected!"
 		self.victim_alert_pub.publish(alert_message)
 		rospy.loginfo("Published alert message!")
@@ -129,6 +192,9 @@ class VictimDetector:
 			rospy.logwarn("Victim detected, but odometry is missing!")
 
 if __name__ == "__main__":
+	"""
+    Initializes the ROS node and starts the victim detection process.
+	"""
     rospy.init_node("victim_detector")
     detector = VictimDetector()
     rospy.spin()

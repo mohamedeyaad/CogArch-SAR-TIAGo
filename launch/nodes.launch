@@ -1,0 +1,10 @@
+<launch>
+    <!-- Launch Node 1 -->
+    <node pkg="tiago_sar_cogarch" type="speaker_service.py" name="speaker_service"/>
+    <!-- Launch Node 2 -->
+    <node pkg="tiago_sar_cogarch" type="structural_risk_assessment.py" name="risk_assessment"/>
+    <!-- Launch Node 3 -->
+    <node pkg="tiago_sar_cogarch" type="triage_system.py" name="triage_system"/>
+    <!-- Launch Node 4 -->
+    <node pkg="tiago_sar_cogarch" type="victim_detection.py" name="victim_detection"/>
+</launch>

@@ -1,0 +1,10 @@
+<launch>
+    <!-- Include the nodes -->
+    <include file="$(find tiago_sar_cogarch)/launch/nodes.launch"/>
+    
+    <!-- Play all 8 bag files -->
+    <include file="$(find tiago_sar_cogarch)/launch/bags.launch"/>
+
+    <!-- Run the integration test -->
+    <test test-name="integration_test" pkg="tiago_sar_cogarch" type="integration_test.py"/>
+</launch>

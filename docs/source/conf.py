@@ -9,7 +9,9 @@ import sys
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-sys.path.insert(0, os.path.abspath('../../'))  # Adjust if needed
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../'))
+
 
 project = 'Post-Earthquake Search and Rescue Robot'
 copyright = '2025, teamG'
@@ -36,5 +38,3 @@ html_static_path = ['_static']
 
 templates_path = ['_templates']
 exclude_patterns = []
-
-

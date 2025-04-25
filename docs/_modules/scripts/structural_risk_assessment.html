@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.structural_risk_assessment &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scripts.structural_risk_assessment</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.structural_risk_assessment</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dummy Structural Risk Assessment Node</span>
+
+<span class="sd">This ROS node simulates structural risk assessment using dummy sensor data from:</span>
+<span class="sd">- RGB camera (crack detection)</span>
+<span class="sd">- LiDAR (wall anomalies)</span>
+<span class="sd">- Sonar (hollow spaces)</span>
+
+<span class="sd">It publishes risk alerts and can trigger autonomous reassessment movements when</span>
+<span class="sd">confidence in sensor readings is low.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    This is a simulation/dummy implementation using random data for demonstration</span>
+<span class="sd">    purposes. Real-world implementations would use actual sensor processing algorithms.</span>
+
+<span class="sd">Topics Subscribed:</span>
+<span class="sd">    /xtion/rgb/image_raw (sensor_msgs/Image): RGB camera feed</span>
+<span class="sd">    /scan (sensor_msgs/LaserScan): LiDAR measurements</span>
+<span class="sd">    /sonar_base (sensor_msgs/Range): Sonar readings</span>
+<span class="sd">    /mobile_base_controller/odom (nav_msgs/Odometry): Robot odometry</span>
+
+<span class="sd">Topics Published:</span>
+<span class="sd">    /risk_alert (std_msgs/String): Structural risk status alerts</span>
+<span class="sd">    /move_base_simple/goal (geometry_msgs/PoseStamped): Navigation goals</span>
+<span class="sd">    /reassessment_status (std_msgs/String): Reassessment system status</span>
+
+<span class="sd">Global Variables:</span>
+<span class="sd">    counter_flag (int): Counter for received sensor messages</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="n">Range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nav_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Odometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoseStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span>
+
+<span class="n">counter_flag</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="StructuralRiskDummy"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StructuralRiskDummy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class for dummy structural risk assessment system</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        crack_count (int): Simulated crack count from RGB images</span>
+<span class="sd">        wall_anomalies (int): Simulated wall anomalies from LiDAR</span>
+<span class="sd">        hollow_spaces (int): Simulated hollow spaces from sonar</span>
+<span class="sd">        current_pose (geometry_msgs/Pose): Current robot position</span>
+<span class="sd">        risk_pub (rospy.Publisher): Risk alert publisher</span>
+<span class="sd">        move_pub (rospy.Publisher): Movement command publisher</span>
+<span class="sd">        reassessment_pub (rospy.Publisher): Reassessment status publisher</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ROS node, subscribers, and publishers&quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;structural_risk_dummy&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Subscribers</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/xtion/rgb/image_raw&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/scan&quot;</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lidar_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/sonar_base&quot;</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sonar_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/mobile_base_controller/odom&quot;</span><span class="p">,</span> <span class="n">Odometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">odom_callback</span><span class="p">)</span>
+
+        <span class="c1"># Publishers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/risk_alert&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/move_base_simple/goal&quot;</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reassessment_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/reassessment_status&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Dummy detection parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1"># From RGB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c1"># From LiDAR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span> <span class="o">=</span> <span class="mi">0</span>     <span class="c1"># From Sonar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Dummy Structural Risk Assessor Initialized&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StructuralRiskDummy.rgb_callback"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process dummy RGB camera data for crack detection</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            msg (sensor_msgs/Image): RGB image message</span>
+<span class="sd">            </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Generates random crack count between 0-4</span>
+<span class="sd">            - Updates global counter_flag</span>
+<span class="sd">            - Triggers risk evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">counter_flag</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">msg</span><span class="o">.</span><span class="n">width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Invalid RGB image&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dummy: Detected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span><span class="si">}</span><span class="s2"> cracks&quot;</span><span class="p">)</span>
+        <span class="n">counter_flag</span><span class="o">=</span><span class="n">counter_flag</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_risk</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.lidar_callback"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lidar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process dummy LiDAR data for wall anomalies</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            msg (sensor_msgs/LaserScan): LiDAR scan message</span>
+<span class="sd">            </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Generates random anomaly count between 0-2</span>
+<span class="sd">            - Updates global counter_flag</span>
+<span class="sd">            - Triggers risk evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">counter_flag</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">ranges</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Invalid LiDAR reading&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dummy: Detected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="si">}</span><span class="s2"> wall anomalies&quot;</span><span class="p">)</span>
+        <span class="n">counter_flag</span><span class="o">=</span><span class="n">counter_flag</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_risk</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.sonar_callback"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sonar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process dummy sonar data for hollow spaces</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            msg (sensor_msgs/Range): Sonar range message</span>
+<span class="sd">            </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Generates random hollow space count between 0-2</span>
+<span class="sd">            - Updates global counter_flag</span>
+<span class="sd">            - Triggers risk evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">counter_flag</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">range</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Invalid sonar reading&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dummy: Detected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="si">}</span><span class="s2"> hollow spaces&quot;</span><span class="p">)</span>
+        <span class="n">counter_flag</span><span class="o">=</span><span class="n">counter_flag</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_risk</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.odom_callback"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store current robot position from odometry</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            msg (nav_msgs/Odometry): Odometry message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.evaluate_accuracy"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_accuracy">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate confidence in sensor readings</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if accuracy acceptable, False if reassessment needed</span>
+<span class="sd">            </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Checks global counter_flag</span>
+<span class="sd">            - Triggers reassessment with 40% probability</span>
+<span class="sd">            - Resets detection counts when accuracy is low</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">counter_flag</span>
+        <span class="k">if</span> <span class="n">counter_flag</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>    
+            <span class="n">counter_flag</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dummy: Evaluated accuracy = </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">accuracy</span> <span class="o">&lt;</span> <span class="mf">0.4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span><span class="o">=</span><span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="o">=</span><span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="o">=</span><span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trigger_reassessment</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.evaluate_risk"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate and publish structural risk assessment</span>
+<span class="sd">        </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Risk score formula: (cracks*2) + anomalies + (hollows*3)</span>
+<span class="sd">            - Risk levels:</span>
+<span class="sd">                - HIGH: &gt;8</span>
+<span class="sd">                - MEDIUM: 4-8</span>
+<span class="sd">                - LOW: &lt;4</span>
+<span class="sd">            - Publishes to /risk_alert topic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">risk_score</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_accuracy</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">risk_score</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;HIGH&quot;</span>
+        <span class="k">elif</span> <span class="n">risk_score</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;MEDIUM&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;LOW&quot;</span>
+
+        <span class="n">report</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2"> RISK] &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Cracks: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">crack_count</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Anomalies: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Hollows: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(Score: </span><span class="si">{</span><span class="n">risk_score</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Published Risk Alert: </span><span class="si">{</span><span class="n">report</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StructuralRiskDummy.trigger_reassessment"><a class="viewcode-back" href="../../structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">trigger_reassessment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initiate dummy movement for closer inspection</span>
+<span class="sd">        </span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - Creates PoseStamped message 1m ahead of current position</span>
+<span class="sd">            - Publishes to /move_base_simple/goal</span>
+<span class="sd">            - Publishes reassessment status</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span><span class="p">:</span>
+            <span class="n">goal</span> <span class="o">=</span> <span class="n">PoseStamped</span><span class="p">()</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;map&quot;</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mf">1.0</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reassessment_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;Moving closer for reassessment&quot;</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Dummy: Moving 1m closer for reassessment&quot;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main execution block&quot;&quot;&quot;</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">StructuralRiskDummy</span><span class="p">()</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

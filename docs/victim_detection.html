@@ -19,7 +19,6 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Code API Reference" href="api.html" />
     <link rel="prev" title="Structural Risk Assessment" href="structural_risk_assessment.html" /> 
 </head>
 
@@ -50,8 +49,28 @@
 <li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Code API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Victim Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#diagram-overview">Diagram Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#state-1-detecting-victims">State 1: Detecting Victims</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-2-locating">State 2: Locating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-3-reporting">State 3: Reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scripts.victim_detection">code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.victim_detection.VictimDetector"><code class="docutils literal notranslate"><span class="pre">VictimDetector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.audio_callback"><code class="docutils literal notranslate"><span class="pre">VictimDetector.audio_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.depth_callback"><code class="docutils literal notranslate"><span class="pre">VictimDetector.depth_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.detect_victim_audio"><code class="docutils literal notranslate"><span class="pre">VictimDetector.detect_victim_audio()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.detect_victim_rgb"><code class="docutils literal notranslate"><span class="pre">VictimDetector.detect_victim_rgb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.odom_callback"><code class="docutils literal notranslate"><span class="pre">VictimDetector.odom_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.report_victim"><code class="docutils literal notranslate"><span class="pre">VictimDetector.report_victim()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector.rgb_callback"><code class="docutils literal notranslate"><span class="pre">VictimDetector.rgb_callback()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -80,11 +99,227 @@
              
   <section id="victim-detection">
 <h1>Victim Detection<a class="headerlink" href="#victim-detection" title="Permalink to this heading"></a></h1>
-<p>Injured individuals are detected using:
-- RGB-D image processing
-- Sound activity monitoring (via Microphones)</p>
-<p>Detected victims’ positions are published on a topic and logged.</p>
-<img alt="../images/victim_detection_logic.png" src="../images/victim_detection_logic.png" />
+<a class="reference internal image-reference" href="_images/victim_detection_logic.png"><img alt="_images/victim_detection_logic.png" src="_images/victim_detection_logic.png" style="width: 1500px;" /></a>
+<section id="diagram-overview">
+<h2>Diagram Overview<a class="headerlink" href="#diagram-overview" title="Permalink to this heading"></a></h2>
+<p><strong>Behavioral Diagram Type:</strong> UML State Machine Diagram</p>
+<p>This is appropriate for modeling the state-based behavior of a system component that changes states based on events, conditions, or actions.</p>
+<p><strong>Description of Components:</strong></p>
+<p>The state machine diagram contains two composite states with substates and one simple state. It begins with an initial pseudostate and ends with a terminate pseudostate.</p>
+<p><strong>Process Overview:</strong></p>
+<ol class="arabic simple">
+<li><p>Victim detection using audio and visual sensors</p></li>
+<li><p>Location estimation using depth and odometry data</p></li>
+<li><p>Reporting the detected victim’s location and detection alert</p></li>
+</ol>
+<p><strong>State Details:</strong></p>
+<section id="state-1-detecting-victims">
+<h3>State 1: Detecting Victims<a class="headerlink" href="#state-1-detecting-victims" title="Permalink to this heading"></a></h3>
+<p><strong>Substates:</strong></p>
+<ul class="simple">
+<li><p>Parallel processes:
+- Acquire data from RGB-D camera → Process data
+- Acquire data from microphones → Process data</p></li>
+</ul>
+<p><strong>Transition to Next State:</strong> Occurs if a victim is detected or sound level exceeds 500. Transitions to the <em>Detected victim</em> state.</p>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">turn_on_camera</span></code> and <code class="docutils literal notranslate"><span class="pre">turn_on_microphone</span></code></p></li>
+<li><p><em>During state:</em> Perform <code class="docutils literal notranslate"><span class="pre">acquire_sensor_data</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">turn_off_camera</span></code> and <code class="docutils literal notranslate"><span class="pre">turn_off_microphone</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">time_out()</span></code> event occurs: Trigger <code class="docutils literal notranslate"><span class="pre">error_handling()</span></code> function</p></li>
+</ul>
+</section>
+<section id="state-2-locating">
+<h3>State 2: Locating<a class="headerlink" href="#state-2-locating" title="Permalink to this heading"></a></h3>
+<p><strong>Substates:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Data Collection:</strong>
+- Acquire depth data
+- Acquire odometry data</p></li>
+<li><p><strong>Location Estimation:</strong>
+- Calculate location
+- Verify data
+- Send data</p></li>
+</ol>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">acquiring_sensor_data</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">end_communication</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">calculation_failed()</span></code> occurs: Perform <code class="docutils literal notranslate"><span class="pre">calculate_again</span></code></p></li>
+</ul>
+</section>
+<section id="state-3-reporting">
+<h3>State 3: Reporting<a class="headerlink" href="#state-3-reporting" title="Permalink to this heading"></a></h3>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">calculate_location</span></code></p></li>
+<li><p><em>During state:</em> Perform <code class="docutils literal notranslate"><span class="pre">report_location</span></code> and <code class="docutils literal notranslate"><span class="pre">report_alert</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">verify_communication</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">no_response()</span></code> event occurs: Execute <code class="docutils literal notranslate"><span class="pre">send_again</span></code></p></li>
+</ul>
+<table class="docutils align-left" id="id1">
+<caption><span class="caption-text">Victim Detection Key Performance Indicators (KPIs)</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>KPIs</strong></p></th>
+<th class="head"><p><strong>Metric</strong></p></th>
+<th class="head"><p><strong>Success Criteria</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Victim Detection Accuracy (Visual)</p></td>
+<td><p>Precision/recall in detecting humans in RGB-D images</p></td>
+<td><p>≥90% accuracy in test set</p></td>
+</tr>
+<tr class="row-odd"><td><p>Victim Detection Accuracy (Audio)</p></td>
+<td><p>Correctly detect sounds</p></td>
+<td><p>≥85% true positive rate on labeled audio samples</p></td>
+</tr>
+<tr class="row-even"><td><p>False Positive Rate</p></td>
+<td><p>Percentage of false alerts (e.g., non-human objects)</p></td>
+<td><p>&lt;5% under standard conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Location Estimation Accuracy</p></td>
+<td><p>Deviation between reported and actual victim location</p></td>
+<td><p>≤0.5m deviation</p></td>
+</tr>
+<tr class="row-even"><td><p>Alert Latency</p></td>
+<td><p>Time between detection and message publication</p></td>
+<td><p>≤500ms from detection to message receipt</p></td>
+</tr>
+<tr class="row-odd"><td><p>Localization Accuracy</p></td>
+<td><p>Deviation between robot’s reported and actual location</p></td>
+<td><p>≤0.5m deviation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="module-scripts.victim_detection">
+<span id="code"></span><h2>code<a class="headerlink" href="#module-scripts.victim_detection" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.victim_detection.</span></span><span class="sig-name descname"><span class="pre">VictimDetector</span></span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A ROS-based victim detection class using RGB images, depth data, audio, and odometry.</p>
+<dl class="simple">
+<dt>Subscribes to:</dt><dd><ul class="simple">
+<li><p>/xtion/rgb/image_raw: RGB camera feed.</p></li>
+<li><p>/xtion/depth/image_raw: Depth image feed.</p></li>
+<li><p>/mobile_base_controller/odom: Robot odometry.</p></li>
+<li><p>/audio: Audio data.</p></li>
+</ul>
+</dd>
+<dt>Publishes:</dt><dd><ul class="simple">
+<li><p>/victim_location: Estimated location of detected victim.</p></li>
+<li><p>/victim_alert: Alert message when a victim is detected.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.audio_callback">
+<span class="sig-name descname"><span class="pre">audio_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.audio_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.audio_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for audio messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>audio_msg</strong> (<em>audio_common_msgs.msg.AudioData</em>) – AudioData message containing sound samples.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.depth_callback">
+<span class="sig-name descname"><span class="pre">depth_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.depth_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.depth_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for depth image messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>depth_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Depth image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.detect_victim_audio">
+<span class="sig-name descname"><span class="pre">detect_victim_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.detect_victim_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.detect_victim_audio" title="Permalink to this definition"></a></dt>
+<dd><p>Detects a victim using audio data based on volume threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_msg</strong> (<em>audio_common_msgs.msg.AudioData</em>) – AudioData message.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – Volume threshold for detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if volume exceeds threshold, otherwise False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.detect_victim_rgb">
+<span class="sig-name descname"><span class="pre">detect_victim_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.detect_victim_rgb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.detect_victim_rgb" title="Permalink to this definition"></a></dt>
+<dd><p>Detects a victim using RGB image data by looking for red color blobs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rgb_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Image message with RGB data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if a victim is detected, otherwise False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odom_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for odometry messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>odom_msg</strong> (<em>nav_msgs.msg.Odometry</em>) – Odometry data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.report_victim">
+<span class="sig-name descname"><span class="pre">report_victim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.report_victim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.report_victim" title="Permalink to this definition"></a></dt>
+<dd><p>Publishes a victim alert and location if depth image data is available.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.rgb_callback">
+<span class="sig-name descname"><span class="pre">rgb_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.rgb_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.rgb_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for RGB image messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rgb_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Image message containing RGB data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -92,7 +327,6 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="structural_risk_assessment.html" class="btn btn-neutral float-left" title="Structural Risk Assessment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api.html" class="btn btn-neutral float-right" title="Code API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

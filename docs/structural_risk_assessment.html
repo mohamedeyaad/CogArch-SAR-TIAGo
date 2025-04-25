@@ -49,9 +49,38 @@
 <li class="toctree-l1"><a class="reference internal" href="components.html">Components Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Structural Risk Assessment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Structural Risk Assessment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#diagram-overview">Diagram Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sensor-interface">Sensor Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perception-and-fusion">Perception and Fusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#risk-evaluation">Risk Evaluation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mobility-and-re-inspection">Mobility and Re-Inspection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operator-interaction">Operator Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code">Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.crack_count"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.crack_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.wall_anomalies"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.wall_anomalies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.hollow_spaces"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.hollow_spaces</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.current_pose"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.current_pose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.risk_pub"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.risk_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.move_pub"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.move_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.reassessment_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_accuracy"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.evaluate_accuracy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.evaluate_risk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.lidar_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.odom_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.rgb_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.sonar_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy.trigger_reassessment()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Code API Reference</a></li>
 </ul>
 
         </div>
@@ -80,14 +109,400 @@
              
   <section id="structural-risk-assessment">
 <h1>Structural Risk Assessment<a class="headerlink" href="#structural-risk-assessment" title="Permalink to this heading"></a></h1>
-<p>Wall stability and crack detection are achieved using:
-- RGB images + depth maps
-- Sensor fusion with SONAR and Force Sensors</p>
-<p>Risk levels:
-- Green (Stable)
-- Yellow (Moderate Risk)
-- Red (Critical)</p>
-<img alt="../images/risk_assessment_diagram.png" src="../images/risk_assessment_diagram.png" />
+<a class="reference internal image-reference" href="_images/risk_assessment_diagram.png"><img alt="_images/risk_assessment_diagram.png" src="_images/risk_assessment_diagram.png" style="width: 1500px;" /></a>
+<p>This document describes the detailed flow of the <strong>Structural Risk Assessment</strong> system, represented by the activity diagram.
+The diagram is organized into five main sections: <strong>Sensor Interface</strong>, <strong>Perception and Fusion</strong>, <strong>Risk Evaluation</strong>, <strong>Mobility and Re-Inspection</strong>, and <strong>Operator Interaction</strong>.</p>
+<p>Each section is responsible for a set of operations crucial to detecting, evaluating, and responding to structural risks.</p>
+<section id="diagram-overview">
+<h2>Diagram Overview<a class="headerlink" href="#diagram-overview" title="Permalink to this heading"></a></h2>
+<section id="sensor-interface">
+<h3>Sensor Interface<a class="headerlink" href="#sensor-interface" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>This section initiates every <strong>100 ms</strong> and manages the acquisition of sensor data.</p></li>
+<li><p>The system collects inputs from multiple sources:</p>
+<ul>
+<li><p>Sonar (producing Range data)</p></li>
+<li><p>Lidar (producing 3D Point Cloud data)</p></li>
+<li><p>RGB Camera (producing RGB Images)</p></li>
+<li><p>Depth Camera (producing Depth Images)</p></li>
+</ul>
+</li>
+<li><p>After acquisition, the system validates the RGB image using a decision point:</p>
+<ul>
+<li><p>If the RGB Image is invalid, an error is sent via <cite>SendError_Camera</cite>.</p></li>
+<li><p>If valid, the image is processed.</p></li>
+</ul>
+</li>
+<li><p>Simultaneously, the system checks if other sensor readings are valid:</p>
+<ul>
+<li><p>If invalid, an error is sent via <cite>SendError_Sensor</cite>.</p></li>
+<li><p>If valid, the sensor data is processed.</p></li>
+</ul>
+</li>
+<li><p>Once processing is complete, the system proceeds to the next section.</p></li>
+</ul>
+</section>
+<section id="perception-and-fusion">
+<h3>Perception and Fusion<a class="headerlink" href="#perception-and-fusion" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>In this phase, sensor data (images, Lidar, Sonar, depth camera, and force sensor) are fused together.</p></li>
+<li><p>The system then classifies structural defects based on the fused data.</p></li>
+<li><p>A decision is made:</p>
+<ul>
+<li><p>If classification fails (<cite>isClassifyFail</cite>), the process terminates.</p></li>
+<li><p>If classification succeeds, the system advances to risk evaluation.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="risk-evaluation">
+<h3>Risk Evaluation<a class="headerlink" href="#risk-evaluation" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>The system evaluates the <strong>risk level</strong> associated with the classified structural defect.</p></li>
+<li><p>Risk level and accuracy are acquired and stored in <cite>RISK_DS</cite>.</p></li>
+<li><p>Based on the evaluated risk, the system categorizes the defect into one of three levels:</p>
+<ul>
+<li><p><strong>High Risk</strong></p></li>
+<li><p><strong>Medium Risk</strong></p></li>
+<li><p><strong>Low Risk</strong></p></li>
+</ul>
+</li>
+<li><p>Each decision path ensures proper logging or alerts as necessary, followed by a transition to mobility operations.</p></li>
+</ul>
+</section>
+<section id="mobility-and-re-inspection">
+<h3>Mobility and Re-Inspection<a class="headerlink" href="#mobility-and-re-inspection" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>This section evaluates the <strong>accuracy</strong> of the risk evaluation.</p></li>
+<li><p>A decision point checks whether the current accuracy is sufficient:</p>
+<ul>
+<li><p>If sufficient, an alert is sent to the operator.</p></li>
+<li><p>If insufficient, the system extracts a <strong>2D Position</strong> from the 3D pose.</p></li>
+</ul>
+</li>
+<li><p>It then assesses the reachability of the target:</p>
+<ul>
+<li><p>If unreachable, an alert is sent to inform the operator.</p></li>
+<li><p>If reachable, the system commands a <strong>MoveCloser(2D Position)</strong> action for better data collection and re-inspection.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="operator-interaction">
+<h3>Operator Interaction<a class="headerlink" href="#operator-interaction" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>This section handles communication between the system and the human operator.</p></li>
+<li><p>Upon sending an alert, the system waits for operator acknowledgment:</p>
+<ul>
+<li><p>If the alert is received and acknowledged, the system logs the acknowledgment.</p></li>
+<li><p>If not acknowledged, the system records it as “Not Acknowledged” and ends the current interaction flow.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h2>
+<p>The full workflow enables:</p>
+<ul class="simple">
+<li><p>Continuous data acquisition from multiple sensors.</p></li>
+<li><p>Fusion of sensory information for accurate structural defect detection.</p></li>
+<li><p>Risk evaluation with different severity levels.</p></li>
+<li><p>Dynamic mobility actions to enhance inspection quality.</p></li>
+<li><p>Real-time interaction with human operators to ensure timely decision-making.</p></li>
+</ul>
+<p>This systematic, cyclic approach ensures robustness, reliability, and safety in structural risk assessment scenarios.</p>
+<p>Key Performance Indicators (KPIs) for the system:</p>
+<p>Key Performance Indicators (KPIs) for the system:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Key Performance Indicators (KPIs) for Structural Risk Assessment</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>KPI</p></th>
+<th class="head"><p>Metric</p></th>
+<th class="head"><p>Success Criteria</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><ol class="arabic simple">
+<li><p>Crack Detection Accuracy</p></li>
+</ol>
+</td>
+<td><p>% of correctly identified cracks in a dataset</p></td>
+<td><p>&gt;90% precision/recall on test images</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="2">
+<li><p>Wall Risk Classification</p></li>
+</ol>
+</td>
+<td><p>Correct risk level (e.g., low/medium/high) assigned</p></td>
+<td><p>&gt;85% accuracy on labeled structural risks</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="3">
+<li><p>Depth Consistency for Crack Areas</p></li>
+</ol>
+</td>
+<td><p>Mean depth variance in crack regions</p></td>
+<td><p>Low variance = possible instability</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="4">
+<li><p>Fusion with Sensor Data (e.g., Force/Vibration)</p></li>
+</ol>
+</td>
+<td><p>Logical consistency of fused input (e.g., cracks + stress reading = high risk)</p></td>
+<td><p>Sensor fusion increases classification confidence</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="5">
+<li><p>Response Latency</p></li>
+</ol>
+</td>
+<td><p>Time from image acquisition to risk alert</p></td>
+<td><p>&lt; 500ms in real-time ROS environment</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="6">
+<li><p>Proximity Decision Trigger</p></li>
+</ol>
+</td>
+<td><p>% of correctly triggered “move closer” decisions for unclear structures</p></td>
+<td><p>&gt;90% of low-confidence cases result in correct proximity behavior</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="7">
+<li><p>Alert Publishing Reliability</p></li>
+</ol>
+</td>
+<td><p>% of structural risk alerts published correctly</p></td>
+<td><p>100% of critical cases result in a published alert</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-scripts.structural_risk_assessment"></span><p>Dummy Structural Risk Assessment Node</p>
+<p>This ROS node simulates structural risk assessment using dummy sensor data from:
+- RGB camera (crack detection)
+- LiDAR (wall anomalies)
+- Sonar (hollow spaces)</p>
+<p>It publishes risk alerts and can trigger autonomous reassessment movements when
+confidence in sensor readings is low.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a simulation/dummy implementation using random data for demonstration
+purposes. Real-world implementations would use actual sensor processing algorithms.</p>
+</div>
+<dl class="simple">
+<dt>Topics Subscribed:</dt><dd><p>/xtion/rgb/image_raw (sensor_msgs/Image): RGB camera feed
+/scan (sensor_msgs/LaserScan): LiDAR measurements
+/sonar_base (sensor_msgs/Range): Sonar readings
+/mobile_base_controller/odom (nav_msgs/Odometry): Robot odometry</p>
+</dd>
+<dt>Topics Published:</dt><dd><p>/risk_alert (std_msgs/String): Structural risk status alerts
+/move_base_simple/goal (geometry_msgs/PoseStamped): Navigation goals
+/reassessment_status (std_msgs/String): Reassessment system status</p>
+</dd>
+<dt>Global Variables:</dt><dd><p>counter_flag (int): Counter for received sensor messages</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.structural_risk_assessment.</span></span><span class="sig-name descname"><span class="pre">StructuralRiskDummy</span></span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main class for dummy structural risk assessment system</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.crack_count">
+<span class="sig-name descname"><span class="pre">crack_count</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.crack_count" title="Permalink to this definition"></a></dt>
+<dd><p>Simulated crack count from RGB images</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.wall_anomalies">
+<span class="sig-name descname"><span class="pre">wall_anomalies</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.wall_anomalies" title="Permalink to this definition"></a></dt>
+<dd><p>Simulated wall anomalies from LiDAR</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.hollow_spaces">
+<span class="sig-name descname"><span class="pre">hollow_spaces</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.hollow_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Simulated hollow spaces from sonar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.current_pose">
+<span class="sig-name descname"><span class="pre">current_pose</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.current_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Current robot position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>geometry_msgs/Pose</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.risk_pub">
+<span class="sig-name descname"><span class="pre">risk_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.risk_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Risk alert publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.move_pub">
+<span class="sig-name descname"><span class="pre">move_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.move_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Movement command publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub">
+<span class="sig-name descname"><span class="pre">reassessment_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Reassessment status publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_accuracy">
+<span class="sig-name descname"><span class="pre">evaluate_accuracy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.evaluate_accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_accuracy" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate confidence in sensor readings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if accuracy acceptable, False if reassessment needed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Checks global counter_flag</p></li>
+<li><p>Triggers reassessment with 40% probability</p></li>
+<li><p>Resets detection counts when accuracy is low</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk">
+<span class="sig-name descname"><span class="pre">evaluate_risk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.evaluate_risk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate and publish structural risk assessment</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Risk score formula: (cracks*2) + anomalies + (hollows*3)</p></li>
+<li><dl class="simple">
+<dt>Risk levels:</dt><dd><ul>
+<li><p>HIGH: &gt;8</p></li>
+<li><p>MEDIUM: 4-8</p></li>
+<li><p>LOW: &lt;4</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Publishes to /risk_alert topic</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback">
+<span class="sig-name descname"><span class="pre">lidar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.lidar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Process dummy LiDAR data for wall anomalies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs/LaserScan</em>) – LiDAR scan message</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Generates random anomaly count between 0-2</p></li>
+<li><p>Updates global counter_flag</p></li>
+<li><p>Triggers risk evaluation</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Store current robot position from odometry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs/Odometry</em>) – Odometry message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback">
+<span class="sig-name descname"><span class="pre">rgb_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.rgb_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Process dummy RGB camera data for crack detection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs/Image</em>) – RGB image message</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Generates random crack count between 0-4</p></li>
+<li><p>Updates global counter_flag</p></li>
+<li><p>Triggers risk evaluation</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback">
+<span class="sig-name descname"><span class="pre">sonar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.sonar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Process dummy sonar data for hollow spaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs/Range</em>) – Sonar range message</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Generates random hollow space count between 0-2</p></li>
+<li><p>Updates global counter_flag</p></li>
+<li><p>Triggers risk evaluation</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment">
+<span class="sig-name descname"><span class="pre">trigger_reassessment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.trigger_reassessment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment" title="Permalink to this definition"></a></dt>
+<dd><p>Initiate dummy movement for closer inspection</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Creates PoseStamped message 1m ahead of current position</p></li>
+<li><p>Publishes to /move_base_simple/goal</p></li>
+<li><p>Publishes reassessment status</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 

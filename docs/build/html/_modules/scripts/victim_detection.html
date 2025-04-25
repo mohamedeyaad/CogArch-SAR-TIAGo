@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.victim_detection &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scripts.victim_detection</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.victim_detection</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">audio_common_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nav_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Odometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
+
+
+<div class="viewcode-block" id="VictimDetector"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VictimDetector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A ROS-based victim detection class using RGB images, depth data, audio, and odometry.</span>
+
+<span class="sd">    Subscribes to:</span>
+<span class="sd">        - /xtion/rgb/image_raw: RGB camera feed.</span>
+<span class="sd">        - /xtion/depth/image_raw: Depth image feed.</span>
+<span class="sd">        - /mobile_base_controller/odom: Robot odometry.</span>
+<span class="sd">        - /audio: Audio data.</span>
+
+<span class="sd">    Publishes:</span>
+<span class="sd">        - /victim_location: Estimated location of detected victim.</span>
+<span class="sd">        - /victim_alert: Alert message when a victim is detected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the VictimDetector class by subscribing to the necessary topics</span>
+<span class="sd">        and setting up publishers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>	
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/xtion/rgb/image_raw&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/xtion/depth/image_raw&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/mobile_base_controller/odom&quot;</span><span class="p">,</span> <span class="n">Odometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">odom_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/audio&quot;</span><span class="p">,</span> <span class="n">AudioData</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">audio_callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_loc_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/victim_location&quot;</span><span class="p">,</span> <span class="n">Odometry</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/victim_alert&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_odom</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_depth</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="VictimDetector.rgb_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for RGB image messages.</span>
+
+<span class="sd">        :param rgb_msg: Image message containing RGB data.</span>
+<span class="sd">        :type rgb_msg: sensor_msgs.msg.Image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;RGB image received!&quot;</span><span class="p">)</span>
+        <span class="n">see_victim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_victim_rgb</span><span class="p">(</span><span class="n">rgb_msg</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Victim detected by camera: </span><span class="si">{</span><span class="n">see_victim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">see_victim</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_victim</span><span class="p">()</span>  </div>
+    
+<div class="viewcode-block" id="VictimDetector.audio_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.audio_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">audio_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for audio messages.</span>
+
+<span class="sd">        :param audio_msg: AudioData message containing sound samples.</span>
+<span class="sd">        :type audio_msg: audio_common_msgs.msg.AudioData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Audio received!&quot;</span><span class="p">)</span>
+        <span class="n">hear_victim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_victim_audio</span><span class="p">(</span><span class="n">audio_msg</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Victim detected by audio: </span><span class="si">{</span><span class="n">hear_victim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hear_victim</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_victim</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="VictimDetector.odom_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odom_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for odometry messages.</span>
+
+<span class="sd">        :param odom_msg: Odometry data.</span>
+<span class="sd">        :type odom_msg: nav_msgs.msg.Odometry</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_odom</span> <span class="o">=</span> <span class="n">odom_msg</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Odometry received!&quot;</span><span class="p">)</span>    </div>
+    
+<div class="viewcode-block" id="VictimDetector.depth_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.depth_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">depth_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for depth image messages.</span>
+
+<span class="sd">        :param depth_msg: Depth image.</span>
+<span class="sd">        :type depth_msg: sensor_msgs.msg.Image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Depth data received!&quot;</span><span class="p">)</span>  
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bridge</span> <span class="o">=</span> <span class="n">CvBridge</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="o">=</span> <span class="n">bridge</span><span class="o">.</span><span class="n">imgmsg_to_cv2</span><span class="p">(</span><span class="n">depth_msg</span><span class="p">,</span> <span class="n">desired_encoding</span><span class="o">=</span><span class="s2">&quot;passthrough&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">depth_header</span> <span class="o">=</span> <span class="n">depth_msg</span><span class="o">.</span><span class="n">header</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert depth image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="VictimDetector.detect_victim_rgb"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.detect_victim_rgb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detects a victim using RGB image data by looking for red color blobs.</span>
+
+<span class="sd">        :param rgb_msg: Image message with RGB data.</span>
+<span class="sd">        :type rgb_msg: sensor_msgs.msg.Image</span>
+<span class="sd">        :return: True if a victim is detected, otherwise False.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert ROS Image to OpenCV</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">rgb_msg</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">rgb_msg</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Handle possible alpha channel (4 channels)</span>
+            <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGRA2BGR</span><span class="p">)</span>
+            
+            <span class="c1"># Detect red regions</span>
+            <span class="n">lower_red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+            <span class="n">upper_red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>  <span class="c1"># Wider range</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">lower_red</span><span class="p">,</span> <span class="n">upper_red</span><span class="p">)</span>
+            
+            <span class="c1"># Debug: Save images</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;/tmp/latest_image.png&quot;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;/tmp/red_mask.png&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">countNonZero</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span>  <span class="c1"># Lower threshold for testing</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>   </div>
+    
+<div class="viewcode-block" id="VictimDetector.detect_victim_audio"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.detect_victim_audio">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detects a victim using audio data based on volume threshold.</span>
+
+<span class="sd">        :param audio_msg: AudioData message.</span>
+<span class="sd">        :type audio_msg: audio_common_msgs.msg.AudioData</span>
+<span class="sd">        :param threshold: Volume threshold for detection.</span>
+<span class="sd">        :type threshold: int</span>
+<span class="sd">        :return: True if volume exceeds threshold, otherwise False.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert audio data from ROS AudioData message (uint8 array) to bytes</span>
+            <span class="n">audio_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">audio_msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Try interpreting the bytes as signed 16-bit PCM audio</span>
+            <span class="n">audio_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">audio_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+
+            <span class="c1"># Compute the mean absolute amplitude (volume indicator)</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">audio_np</span><span class="p">))</span>
+
+            <span class="c1"># Debug: Log or save volume level (optional)</span>
+            <span class="c1"># rospy.loginfo(f&quot;Current volume level: {volume}&quot;)</span>
+
+            <span class="c1"># Return True if the volume exceeds the threshold</span>
+            <span class="k">return</span> <span class="n">volume</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Log any exception that occurs during processing</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Audio volume detection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="VictimDetector.report_victim"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.report_victim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">report_victim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publishes a victim alert and location if depth image data is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alert_message</span> <span class="o">=</span> <span class="s2">&quot;Victim detected!&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">alert_message</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Published alert message!&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Check if depth image is available</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;latest_depth_image&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">depth_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span>
+            
+            <span class="c1"># Assume the victim is at the center of the image</span>
+            <span class="n">center_x</span> <span class="o">=</span> <span class="n">depth_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">center_y</span> <span class="o">=</span> <span class="n">depth_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Read the depth value from the center of the image</span>
+            <span class="n">dummy_depth</span> <span class="o">=</span> <span class="n">depth_img</span><span class="p">[</span><span class="n">center_y</span><span class="p">,</span> <span class="n">center_x</span><span class="p">]</span>
+
+            <span class="c1"># Debug: Log the dummy depth value (optional)</span>
+            <span class="c1"># rospy.loginfo(f&quot;Dummy depth value at center: {dummy_depth}&quot;)	</span>
+            
+            <span class="n">victim_odom</span> <span class="o">=</span> <span class="n">Odometry</span><span class="p">()</span>
+            <span class="n">victim_odom</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">stamp</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;xtion_depth_optical_frame&quot;</span><span class="p">)</span>
+            
+            <span class="n">victim_odom</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># dummy value</span>
+            <span class="n">victim_odom</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">victim_odom</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dummy_depth</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="k">if</span> <span class="n">dummy_depth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="n">victim_odom</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span> 
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">victim_loc_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">victim_odom</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Published victim location!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Victim detected, but odometry is missing!&quot;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the ROS node and starts the victim detection process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s2">&quot;victim_detector&quot;</span><span class="p">)</span>
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">VictimDetector</span><span class="p">()</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

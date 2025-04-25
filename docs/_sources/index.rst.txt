@@ -14,4 +14,3 @@ Welcome to the documentation!
    triage_system
    structural_risk_assessment
    victim_detection
-   api

@@ -1,0 +1,55 @@
+name: ROS Integration Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-20.04
+    container: ros:noetic-ros-core
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        apt-get update && apt-get install -y \
+          ros-noetic-desktop \
+          ros-noetic-cv-bridge \
+          ros-noetic-audio-common-msgs \
+          python3-rosdep
+
+    - name: Initialize ROS workspace
+      run: |
+        source /opt/ros/noetic/setup.bash
+        mkdir -p ~/catkin_ws/src
+        ln -s $PWD ~/catkin_ws/src/tiago_sar_cogarch
+        rosdep init || true
+        rosdep update
+        rosdep install -y --from-paths ~/catkin_ws/src --ignore-src
+        cd ~/catkin_ws && catkin_make
+
+    - name: Run integration tests
+      run: |
+        source ~/catkin_ws/devel/setup.bash
+        rostest tiago_sar_cogarch integration_test.test --results-dir test_results
+        mv test_results/tiago_sar_cogarch/*.xml test_results/
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: test_results/*.xml
+
+    - name: Notify on failure
+      if: failure()
+      uses: actions/scripts/slack@master
+      with:
+        status: ${{ job.status }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

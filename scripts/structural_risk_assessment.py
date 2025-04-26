@@ -75,7 +75,7 @@ class StructuralRiskDummy:
             """Randomly determine whether to trigger reassessment"""
             accuracy = np.random.rand()  # Random float in [0.0, 1.0)
             rospy.loginfo(f"Dummy: Evaluated accuracy = {accuracy:.2f}")
-            if accuracy < 0.4:
+            if accuracy < 0.01:
                 self.crack_count=0
                 self.wall_anomalies=0
                 self.hollow_spaces=0

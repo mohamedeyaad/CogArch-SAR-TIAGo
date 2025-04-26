@@ -187,19 +187,16 @@ class TriageSystem:
 
     def publish_report(self, conscious, responsive, injuries):
         """Publish triage assessment report.
-        
+
         Args:
             conscious (bool): Consciousness status from movement detection
             responsive (bool): Responsiveness status from audio interaction
             injuries (list): Detected injury descriptors
-            
-        Constructs TriageReport message with:
-        - Timestamped header
-        - Consciousness/responsiveness status
-        - Injury list
-        - Priority classification (URGENT/STABLE)
-        - Victim location coordinates
         """
+        if not self.current_victim:
+            rospy.logerr("[TriageSystem] Cannot publish report: victim location is not set.")
+            return
+
         report = TriageReport()
         report.header.stamp = rospy.Time.now()
         report.consciousness = "conscious" if conscious else "unconscious"

@@ -7,4 +7,12 @@
     <node pkg="tiago_sar_cogarch" type="triage_system.py" name="triage_system"/>
     <!-- Launch Node 4 -->
     <node pkg="tiago_sar_cogarch" type="victim_detection.py" name="victim_detection"/>
+    <!-- Launch Node 5 -->
+    <node pkg="tiago_sar_cogarch" type="navigation_controller.py" name="navigation_controller"/>
+    <!-- Launch Node 6 -->
+    <node pkg="tiago_sar_cogarch" type="path_planner.py" name="path_planner"/>
+    <!-- Launch Node 7 -->
+    <node pkg="tiago_sar_cogarch" type="slam.py" name="slam"/>
+    <!-- Launch Node 8 -->
+    <node pkg="tiago_sar_cogarch" type="real_time_alerts.py" name="real_time_alerts"/>
 </launch>

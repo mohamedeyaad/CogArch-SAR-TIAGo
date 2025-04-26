@@ -194,7 +194,6 @@ class TriageSystem:
             injuries (list): Detected injury descriptors
         """
         if not self.current_victim:
-            rospy.logerr("[TriageSystem] Cannot publish report: victim location is not set.")
             return
 
         report = TriageReport()

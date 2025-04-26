@@ -30,11 +30,12 @@ class NavigationController:
 
     def path_callback(self, msg):
         self.path = msg
+        self.mission_completed = False  # Reset mission completion status
         rospy.loginfo("Received a new path with %d points.", len(msg.poses))
 
     def lidar_callback(self, msg):
-        # Dummy obstacle detection: if anything closer than 0.01 meters
-        if any(distance < 0.01 for distance in msg.ranges if distance > 0):
+        # Dummy obstacle detection: if anything closer than 0.06 meters
+        if any(distance < 0.06 for distance in msg.ranges if distance > 0):
             self.obstacle_detected = True
             rospy.logwarn_throttle(5, "Obstacle detected! Stopping robot.")
         else:
@@ -80,7 +81,7 @@ class NavigationController:
         """
         Publish mission report when mission is completed.
         """
-        mission_status = "Mission success: Entire path traversed and mapped."
+        mission_status = "Mission successfully completed!"
         rospy.loginfo(f"[NavigationController] Publishing mission success: {mission_status}")
         self.mission_report_pub.publish(mission_status)
 

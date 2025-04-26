@@ -12,7 +12,7 @@ class SlamNode:
         # Subscribers
         rospy.Subscriber('/mobile_base_controller/odom', Odometry, self.odom_callback)
         rospy.Subscriber('/scan', LaserScan, self.lidar_callback)
-        rospy.Subscriber('/xtion/rgb/image_raw', Image, self.depth_callback)
+        rospy.Subscriber('/xtion/depth/image_raw', Image, self.depth_callback)
         rospy.Subscriber('/sonar_base', Range, self.sonar_callback)
 
         # Publishers

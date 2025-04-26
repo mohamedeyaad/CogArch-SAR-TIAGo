@@ -1,41 +1,41 @@
 <launch>
     <!-- Play depth_raw.bag -->
-    <node pkg="rosbag" type="play" name="player1" 
+    <node pkg="rosbag" type="play" name="depth_raw" 
           args="$(find tiago_sar_cogarch)/bags/depth_raw.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play rgb_raw.bag -->
-    <node pkg="rosbag" type="play" name="player2" 
+    <node pkg="rosbag" type="play" name="rgb_raw" 
           args="$(find tiago_sar_cogarch)/bags/rgb_raw.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play scan_lidar.bag -->
-    <node pkg="rosbag" type="play" name="player3" 
+    <node pkg="rosbag" type="play" name="scan_lidar" 
           args="$(find tiago_sar_cogarch)/bags/scan_lidar.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play odometry.bag -->
-    <node pkg="rosbag" type="play" name="player4" 
+    <node pkg="rosbag" type="play" name="odometry" 
           args="$(find tiago_sar_cogarch)/bags/odometry.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play sonar.bag -->
-    <node pkg="rosbag" type="play" name="player5" 
+    <node pkg="rosbag" type="play" name="sonar" 
           args="$(find tiago_sar_cogarch)/bags/sonar.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play audio.bag -->
-    <node pkg="rosbag" type="play" name="player6" 
+    <node pkg="rosbag" type="play" name="audio" 
           args="$(find tiago_sar_cogarch)/bags/audio.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
     <!-- Play force_sensor.bag -->
-    <node pkg="rosbag" type="play" name="player7" 
+    <node pkg="rosbag" type="play" name="force_sensor" 
           args="$(find tiago_sar_cogarch)/bags/force_sensor.bag --loop" 
-          output="screen" required="true"/>
+          output="log" required="true"/>
 
-    <!-- Play arm_jointstate.bag -->
-    <node pkg="rosbag" type="play" name="player8" 
-          args="$(find tiago_sar_cogarch)/bags/arm_jointstate.bag --loop" 
-          output="screen" required="true"/>
+    <!-- Play user_request.bag -->
+      <node pkg="rosbag" type="play" name="user_request"
+              args="$(find tiago_sar_cogarch)/bags/user_request.bag --loop"
+              output="log" required="true"/> 
 </launch>

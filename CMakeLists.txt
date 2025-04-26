@@ -52,7 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   TriageReport.msg
-#   Message2.msg
+  RiskReport.msg
 )
 
 ## Generate services in the 'srv' folder

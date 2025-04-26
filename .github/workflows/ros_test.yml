@@ -8,8 +8,10 @@ on:
 
 jobs:
   integration-tests:
-    runs-on: ubuntu-20.04
-    container: ros:noetic-ros-core
+    runs-on: ubuntu-latest
+    container: 
+      image: ros:noetic-ros-core
+      options: --platform linux/amd64
 
     steps:
     - name: Checkout code

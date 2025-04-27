@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
 """
-.. module:: real_time_report
-    :platform: ROS
-    :synopsis: ROS node with GUI for real-time mission monitoring and manual control
-
-.. moduleauthor:: Your Name <your.email@example.com>
-
 This node provides a graphical interface for monitoring search and rescue mission status,
 including victim triage, robot location, risk alerts, and mission reports. It also enables
 manual control through ROS topics.

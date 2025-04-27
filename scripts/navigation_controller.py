@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
 """
-.. module:: navigation_controller
-    :platform: ROS
-    :synopsis: ROS node for robot navigation control and mission management
-
-.. moduleauthor:: Your Name <your.email@example.com>
-
 This node handles path following, obstacle avoidance, and mission status reporting.
 """
 

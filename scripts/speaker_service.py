@@ -2,8 +2,10 @@
 """ 
 Speaker Service Node.
 
-This script defines a ROS (Robot Operating System) service node that simulates a speaker's behavior.
+This script defines a ROS service node that simulates a speaker's behavior. 
+
 It listens for service requests containing a message and randomly decides if the speaker successfully reproduces the message.
+
 """
 
 import rospy

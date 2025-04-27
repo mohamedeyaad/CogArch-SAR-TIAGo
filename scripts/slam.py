@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
 """
-.. module:: slam_node
-    :platform: ROS
-    :synopsis: Python module for SLAM (Simultaneous Localization and Mapping) implementation
-
-.. moduleauthor:: Your Name <your.email@example.com>
-
 This node handles sensor data integration and maintains a 3D map of the environment while tracking the robot's pose.
 """
 

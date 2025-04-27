@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
 """
-.. module:: path_planner_node
-    :platform: ROS
-    :synopsis: Python node for generating navigation paths between current pose and goal
-
-.. moduleauthor:: Your Name <your.email@example.com>
-
 This node creates simple straight-line paths between the robot's current position and requested goals.
 """
 

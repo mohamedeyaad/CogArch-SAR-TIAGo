@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Integration Testing &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+  <title>Integration Testing KPIs and Results &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -54,7 +54,27 @@
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">Real Time Alerts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Integration Testing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Integration Testing KPIs and Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sensor-data-availability">1. Sensor Data Availability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#navigation-pipeline-validation">2. Navigation Pipeline Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#victim-detection-and-triage-assessment">3. Victim Detection and Triage Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structural-risk-assessment">4. Structural Risk Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#real-time-responsiveness">5. Real-Time Responsiveness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tests.integration_test.TestSARIntegration"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.setUp"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.setUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.setUpClass"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.setUpClass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.setup_subscribers"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.setup_subscribers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.test_navigation_chain"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.test_navigation_chain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.test_risk_assessment_flow"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.test_risk_assessment_flow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.test_sensor_data_flow"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.test_sensor_data_flow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.test_victim_processing_chain"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.test_victim_processing_chain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests.integration_test.TestSARIntegration.wait_for_condition"><code class="docutils literal notranslate"><span class="pre">TestSARIntegration.wait_for_condition()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -71,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Integration Testing</li>
+      <li class="breadcrumb-item active">Integration Testing KPIs and Results</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/waleedelfieky/CogArch-SAR-TIAGo/blob/main/docs/source/integration_testing.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -81,18 +101,186 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="integration-testing">
-<h1>Integration Testing<a class="headerlink" href="#integration-testing" title="Permalink to this heading"></a></h1>
-<p>Dummy components were launched together and tested using ROS launch files.</p>
-<p>Bag files used:
-- arm_jointstate.bag
-- depth_raw.bag
-- rgb_raw.bag
-- sonar.bag
-- scan_lidar.bag
-- odometry.bag
-- force_sensor.bag</p>
-<p>All topics were monitored, and message flow was verified.</p>
+  <section id="integration-testing-kpis-and-results">
+<h1>Integration Testing KPIs and Results<a class="headerlink" href="#integration-testing-kpis-and-results" title="Permalink to this heading"></a></h1>
+<p>The integration testing process aims to ensure that the system components interact correctly to meet the defined performance and functional requirements. Below is a summary of the <em>Key Performance Indicators (KPIs)</em> used for testing the integration of various subsystems and the corresponding <em>test results</em>.</p>
+<p>—</p>
+<section id="sensor-data-availability">
+<h2>1. Sensor Data Availability<a class="headerlink" href="#sensor-data-availability" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><em>KPI</em>: All sensors (LiDAR, SONAR, RGB-D Camera, Force Sensors, Microphones) must produce data within 20 seconds of initialization.</p></li>
+<li><p><em>Test</em>: <strong>test_sensor_data_flow</strong></p></li>
+<li><p><em>Result</em>: All sensors were verified to be active and producing data within the specified time frame. No missing or delayed data was observed.</p></li>
+</ul>
+<p>—</p>
+</section>
+<section id="navigation-pipeline-validation">
+<h2>2. Navigation Pipeline Validation<a class="headerlink" href="#navigation-pipeline-validation" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt><em>KPI</em>:</dt><dd><ul>
+<li><p>SLAM must produce pose and map data within 30 seconds.</p></li>
+<li><p>Path planning must generate valid paths.</p></li>
+<li><p>Movement commands must be issued within 20 seconds.</p></li>
+<li><p>Mission completion must be detected within 60 seconds.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><em>Test</em>: <strong>test_navigation_chain</strong></p></li>
+<li><dl class="simple">
+<dt><em>Result</em>:</dt><dd><ul>
+<li><p>SLAM outputs (pose and map) were successfully validated within 30 seconds.</p></li>
+<li><p>Path planning generated valid paths with poses.</p></li>
+<li><p>Movement commands (cmd_vel) were issued as expected.</p></li>
+<li><p>Mission completion was detected, and success reports were logged within the required time frame.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>—</p>
+</section>
+<section id="victim-detection-and-triage-assessment">
+<h2>3. Victim Detection and Triage Assessment<a class="headerlink" href="#victim-detection-and-triage-assessment" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt><em>KPI</em>:</dt><dd><ul>
+<li><p>Victim detection must trigger triage assessment within 40 seconds.</p></li>
+<li><p>Triage reports must include valid priority levels (URGENT, STABLE) and victim location.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><em>Test</em>: <strong>test_victim_processing_chain</strong></p></li>
+<li><dl class="simple">
+<dt><em>Result</em>:</dt><dd><ul>
+<li><p>Victim detection successfully triggered triage assessment.</p></li>
+<li><p>Triage reports were validated, with correct priority levels (URGENT, STABLE) and location data.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>—</p>
+</section>
+<section id="structural-risk-assessment">
+<h2>4. Structural Risk Assessment<a class="headerlink" href="#structural-risk-assessment" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt><em>KPI</em>:</dt><dd><ul>
+<li><p>Risk alerts must be generated within 30 seconds.</p></li>
+<li><p>Alerts must include valid risk levels (LOW, MEDIUM, HIGH), crack counts, wall anomalies, hollow spaces, force magnitude, and risk score.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><em>Test</em>: <strong>test_risk_assessment_flow</strong></p></li>
+<li><dl class="simple">
+<dt><em>Result</em>:</dt><dd><ul>
+<li><p>Structural risk alerts were generated and validated.</p></li>
+<li><p>All fields in the RiskReport message were confirmed to be within expected ranges, including risk level, crack count, wall anomalies, and force magnitude.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>—</p>
+</section>
+<section id="real-time-responsiveness">
+<h2>5. Real-Time Responsiveness<a class="headerlink" href="#real-time-responsiveness" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><em>KPI</em>: The system must respond to real-time conditions and produce outputs within specified time limits.</p></li>
+<li><p><em>Test</em>: <strong>All tests using wait_for_condition</strong></p></li>
+<li><p><em>Result</em>: The system demonstrated real-time responsiveness, consistently meeting the specified timing constraints across all tests. The system responded promptly to changes in conditions, as verified by all individual subsystems.</p></li>
+</ul>
+<p>—</p>
+<span class="target" id="module-tests.integration_test"></span><dl class="py class">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.integration_test.</span></span><span class="sig-name descname"><span class="pre">TestSARIntegration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Integration test class to integrate and validate the Search and Rescue (SAR) system functionality.</p>
+<p>This class subscribes to various ROS topics related to victim alerts, triage reports,
+risk assessment, navigation, sensor data, and more. It verifies that the system
+is functioning correctly by checking the data flow between different components.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.setUp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.setUp" title="Permalink to this definition"></a></dt>
+<dd><p>Set up the test environment by initializing message storage and subscribers.</p>
+<p>This method is called before each test case to initialize the message containers
+and set up all necessary ROS subscribers. It also waits for 5 seconds to ensure
+all components are initialized properly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.setUpClass">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setUpClass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.setUpClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.setUpClass" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the ROS node for the SAR integration test.</p>
+<p>This method is called once before all test cases are run to initialize the ROS node
+necessary for subscribing to the required topics.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.setup_subscribers">
+<span class="sig-name descname"><span class="pre">setup_subscribers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.setup_subscribers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.setup_subscribers" title="Permalink to this definition"></a></dt>
+<dd><p>Set up all the ROS subscribers for various topics.</p>
+<p>This method subscribes to multiple ROS topics related to victim alerts, triage
+reports, movement commands, sensor data, and other relevant information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.test_navigation_chain">
+<span class="sig-name descname"><span class="pre">test_navigation_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.test_navigation_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.test_navigation_chain" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the complete navigation pipeline.</p>
+<p>This test case verifies that the SLAM system produces valid pose and map data,
+that path planning works correctly, and that movement commands are generated as expected.
+Finally, it checks if the mission has been completed successfully.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.test_risk_assessment_flow">
+<span class="sig-name descname"><span class="pre">test_risk_assessment_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.test_risk_assessment_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.test_risk_assessment_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Verify structural risk alerts are generated.</p>
+<p>This test case checks if the risk assessment system generates alerts with valid data
+such as risk level, crack count, anomalies, and risk score.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.test_sensor_data_flow">
+<span class="sig-name descname"><span class="pre">test_sensor_data_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.test_sensor_data_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.test_sensor_data_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Verify all sensors are active.</p>
+<p>This test case verifies that all sensors (LiDAR, sonar, audio, force sensor,
+depth images, RGB images) are providing data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.test_victim_processing_chain">
+<span class="sig-name descname"><span class="pre">test_victim_processing_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.test_victim_processing_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.test_victim_processing_chain" title="Permalink to this definition"></a></dt>
+<dd><p>Verify victim detection triggers triage assessment.</p>
+<p>This test case ensures that once a victim alert is received, a triage report is
+generated and contains valid information such as priority and location.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.integration_test.TestSARIntegration.wait_for_condition">
+<span class="sig-name descname"><span class="pre">wait_for_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fail_msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/integration_test.html#TestSARIntegration.wait_for_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.integration_test.TestSARIntegration.wait_for_condition" title="Permalink to this definition"></a></dt>
+<dd><p>Wait for a condition to be met within a specified timeout period.</p>
+<p>This utility method repeatedly checks if a given condition is true. If the condition
+is not met within the specified timeout, the test fails with the provided failure message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> – A lambda function representing the condition to check</p></li>
+<li><p><strong>fail_msg</strong> – The message to display if the condition is not met</p></li>
+<li><p><strong>timeout</strong> – The maximum time to wait for the condition (in seconds)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 

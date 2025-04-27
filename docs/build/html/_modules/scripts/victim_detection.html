@@ -52,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
 </ul>
 
         </div>
@@ -250,9 +250,8 @@
 
         <span class="c1"># Check if depth image is available</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Depth image is missing!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-
+        
         <span class="c1"># Get the depth value at the center of the image</span>
         <span class="n">center_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="n">center_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>

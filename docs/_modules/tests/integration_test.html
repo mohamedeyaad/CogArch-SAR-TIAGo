@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tests.integration_test &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">tests.integration_test</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for tests.integration_test</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nav_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Odometry</span><span class="p">,</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriageReport</span><span class="p">,</span> <span class="n">RiskReport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="n">Twist</span><span class="p">,</span> <span class="n">WrenchStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="n">PointCloud2</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">audio_common_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioData</span>
+
+<div class="viewcode-block" id="TestSARIntegration"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestSARIntegration</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integration test class to integrate and validate the Search and Rescue (SAR) system functionality.</span>
+
+<span class="sd">    This class subscribes to various ROS topics related to victim alerts, triage reports, </span>
+<span class="sd">    risk assessment, navigation, sensor data, and more. It verifies that the system</span>
+<span class="sd">    is functioning correctly by checking the data flow between different components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestSARIntegration.setUpClass"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ROS node for the SAR integration test.</span>
+
+<span class="sd">        This method is called once before all test cases are run to initialize the ROS node</span>
+<span class="sd">        necessary for subscribing to the required topics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;test_sar_integration&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.setUp"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the test environment by initializing message storage and subscribers.</span>
+
+<span class="sd">        This method is called before each test case to initialize the message containers</span>
+<span class="sd">        and set up all necessary ROS subscribers. It also waits for 5 seconds to ensure</span>
+<span class="sd">        all components are initialized properly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Message storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alerts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triage_reports</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_alerts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">movement_commands</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slam_poses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planned_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_reports</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd_vel_msgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slam_maps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sonar_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">audio_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_sensor_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth_images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgb_images</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Setup subscribers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_subscribers</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Wait for everything to initialize</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.setup_subscribers"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.setup_subscribers">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_subscribers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up all the ROS subscribers for various topics.</span>
+
+<span class="sd">        This method subscribes to multiple ROS topics related to victim alerts, triage</span>
+<span class="sd">        reports, movement commands, sensor data, and other relevant information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/victim_alert&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_victim_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/triage_status&#39;</span><span class="p">,</span> <span class="n">TriageReport</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triage_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/risk_alert&#39;</span><span class="p">,</span> <span class="n">RiskReport</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_risk_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/move_base_simple/goal&#39;</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_move_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/slam_3d/current_pose&#39;</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slam_pose_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/planned_path&#39;</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/mission_report&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mission_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/mobile_base_controller/cmd_vel&#39;</span><span class="p">,</span> <span class="n">Twist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_vel_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/scan&#39;</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/slam_3d/map&#39;</span><span class="p">,</span> <span class="n">PointCloud2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/sonar_base&#39;</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sonar_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/audio&#39;</span><span class="p">,</span> <span class="n">AudioData</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_audio_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/wrist_right_ft&#39;</span><span class="p">,</span> <span class="n">WrenchStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_sensor_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/xtion/depth/image_raw&#39;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth_image_cb</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/xtion/rgb/image_raw&#39;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rgb_image_cb</span><span class="p">)</span></div>
+
+    <span class="c1"># Callback functions for each subscriber</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_victim_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for victim alerts.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alerts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_triage_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for triage reports.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triage_reports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_risk_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for risk assessment alerts.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_alerts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for movement commands.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">movement_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_slam_pose_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for SLAM poses.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slam_poses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_path_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for planned paths.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planned_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mission_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for mission reports.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_reports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cmd_vel_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for velocity commands.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd_vel_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for LiDAR scan data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for SLAM map data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slam_maps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sonar_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for sonar data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sonar_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_audio_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for audio data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">audio_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_force_sensor_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for force sensor data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_sensor_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_depth_image_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for depth image data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rgb_image_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function for RGB image data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgb_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Test cases</span>
+<div class="viewcode-block" id="TestSARIntegration.test_navigation_chain"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.test_navigation_chain">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_navigation_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify the complete navigation pipeline.</span>
+
+<span class="sd">        This test case verifies that the SLAM system produces valid pose and map data, </span>
+<span class="sd">        that path planning works correctly, and that movement commands are generated as expected.</span>
+<span class="sd">        Finally, it checks if the mission has been completed successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Verify SLAM outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slam_poses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slam_maps</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;SLAM not producing pose/map data&quot;</span><span class="p">,</span>
+            <span class="mi">30</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Check path planning</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">planned_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">planned_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">poses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;Path planning failed&quot;</span><span class="p">,</span>
+            <span class="mi">30</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Verify movement commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_vel_msgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;No movement commands generated&quot;</span><span class="p">,</span>
+            <span class="mi">20</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Check mission completion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;success&quot;</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">report</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mission_reports</span><span class="p">),</span>
+            <span class="s2">&quot;Mission not completed&quot;</span><span class="p">,</span>
+            <span class="mi">60</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.test_victim_processing_chain"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.test_victim_processing_chain">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_victim_processing_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify victim detection triggers triage assessment.</span>
+
+<span class="sd">        This test case ensures that once a victim alert is received, a triage report is </span>
+<span class="sd">        generated and contains valid information such as priority and location.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">victim_alerts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triage_reports</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;Victim processing chain failed&quot;</span><span class="p">,</span>
+            <span class="mi">40</span>
+        <span class="p">)</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triage_reports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;URGENT&#39;</span><span class="p">,</span> <span class="s1">&#39;STABLE&#39;</span><span class="p">],</span> <span class="s2">&quot;Invalid triage priority level&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;Missing location in triage report&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.test_risk_assessment_flow"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.test_risk_assessment_flow">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_risk_assessment_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify structural risk alerts are generated.</span>
+
+<span class="sd">        This test case checks if the risk assessment system generates alerts with valid data </span>
+<span class="sd">        such as risk level, crack count, anomalies, and risk score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">risk_alerts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;No risk alerts generated&quot;</span><span class="p">,</span>
+            <span class="mi">30</span>
+        <span class="p">)</span>
+        <span class="n">alert_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">risk_alerts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="s1">&#39;MEDIUM&#39;</span><span class="p">,</span> <span class="s1">&#39;HIGH&#39;</span><span class="p">],</span> 
+                      <span class="s2">&quot;Invalid risk level in alert&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">crack_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> 
+                                <span class="s2">&quot;Invalid crack count in alert&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> 
+                                <span class="s2">&quot;Invalid wall anomalies count in alert&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> 
+                                <span class="s2">&quot;Invalid hollow spaces count in alert&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertGreater</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">force_magnitude</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> 
+                           <span class="s2">&quot;Invalid force magnitude in alert&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertGreater</span><span class="p">(</span><span class="n">alert_msg</span><span class="o">.</span><span class="n">risk_score</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> 
+                           <span class="s2">&quot;Invalid risk score in alert&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.test_sensor_data_flow"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.test_sensor_data_flow">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_sensor_data_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify all sensors are active.</span>
+
+<span class="sd">        This test case verifies that all sensors (LiDAR, sonar, audio, force sensor, </span>
+<span class="sd">        depth images, RGB images) are providing data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No LiDAR scan data&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sonar_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No SONAR data&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">audio_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No microphone audio data&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">force_sensor_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No force sensor data&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth_images</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No depth images&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rgb_images</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No RGB images&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSARIntegration.wait_for_condition"><a class="viewcode-back" href="../../integration_testing.html#tests.integration_test.TestSARIntegration.wait_for_condition">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">fail_msg</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for a condition to be met within a specified timeout period.</span>
+
+<span class="sd">        This utility method repeatedly checks if a given condition is true. If the condition </span>
+<span class="sd">        is not met within the specified timeout, the test fails with the provided failure message.</span>
+
+<span class="sd">        :param condition: A lambda function representing the condition to check</span>
+<span class="sd">        :param fail_msg: The message to display if the condition is not met</span>
+<span class="sd">        :param timeout: The maximum time to wait for the condition (in seconds)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">condition</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">rostest</span>
+    <span class="n">rostest</span><span class="o">.</span><span class="n">rosrun</span><span class="p">(</span><span class="s1">&#39;tiago_sar_cogarch&#39;</span><span class="p">,</span> <span class="s1">&#39;integration_test&#39;</span><span class="p">,</span> <span class="n">TestSARIntegration</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

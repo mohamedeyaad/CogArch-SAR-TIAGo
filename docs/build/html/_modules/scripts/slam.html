@@ -44,7 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../SLAM.html">SLAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
@@ -83,12 +83,6 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">.. module:: slam_node</span>
-<span class="sd">    :platform: ROS</span>
-<span class="sd">    :synopsis: Python module for SLAM (Simultaneous Localization and Mapping) implementation</span>
-
-<span class="sd">.. moduleauthor:: Your Name &lt;your.email@example.com&gt;</span>
-
 <span class="sd">This node handles sensor data integration and maintains a 3D map of the environment while tracking the robot&#39;s pose.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -97,7 +91,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">PointCloud2</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoseStamped</span>
 
-<div class="viewcode-block" id="SlamNode"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlamNode</span><span class="p">:</span>
+<div class="viewcode-block" id="SlamNode"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlamNode</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main SLAM node class that handles sensor subscriptions and map/pose publishing.</span>
 <span class="sd">    </span>
@@ -127,7 +121,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_pose</span> <span class="o">=</span> <span class="n">PoseStamped</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;map&quot;</span>
 
-<div class="viewcode-block" id="SlamNode.odom_callback"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.odom_callback"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Odometry callback function that updates the robot&#39;s pose estimation.</span>
 <span class="sd">        </span>
@@ -139,7 +133,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_pose</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Updated robot pose from odometry.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SlamNode.lidar_callback"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.lidar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lidar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.lidar_callback"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.lidar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lidar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        LiDAR callback function that processes 2D laser scan data.</span>
 <span class="sd">        </span>
@@ -148,7 +142,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Received LiDAR data.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SlamNode.depth_callback"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.depth_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">depth_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.depth_callback"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.depth_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">depth_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Depth image callback function that processes 3D depth information.</span>
 <span class="sd">        </span>
@@ -157,7 +151,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Received depth camera data.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SlamNode.sonar_callback"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.sonar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sonar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.sonar_callback"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.sonar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sonar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sonar callback function that processes range data.</span>
 <span class="sd">        </span>
@@ -166,7 +160,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Received sonar data.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SlamNode.publish_outputs"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.publish_outputs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.publish_outputs"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.publish_outputs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Publishes SLAM outputs including 3D map and current pose estimate.</span>
 <span class="sd">        Creates dummy map data for demonstration purposes.</span>
@@ -180,7 +174,7 @@
         <span class="c1"># Current pose to path planner</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pose_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_pose</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SlamNode.run"><a class="viewcode-back" href="../../slam.html#scripts.slam.SlamNode.run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SlamNode.run"><a class="viewcode-back" href="../../SLAM.html#scripts.slam.SlamNode.run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main node loop running at 10Hz. Continuously publishes SLAM outputs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

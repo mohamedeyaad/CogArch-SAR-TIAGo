@@ -44,7 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SLAM.html">SLAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
@@ -155,7 +155,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="slam.html#scripts.slam.SlamNode.depth_callback">depth_callback() (scripts.slam.SlamNode method)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.depth_callback">depth_callback() (scripts.slam.SlamNode method)</a>
 
       <ul>
         <li><a href="victim_detection.html#scripts.victim_detection.VictimDetector.depth_callback">(scripts.victim_detection.VictimDetector method)</a>
@@ -219,12 +219,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="triage_system.html#scripts.triage_system.TriageSystem.last_question_time">last_question_time (scripts.triage_system.TriageSystem attribute)</a>
 </li>
-      <li><a href="slam.html#scripts.slam.SlamNode.latest_pose">latest_pose (scripts.slam.SlamNode attribute)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.latest_pose">latest_pose (scripts.slam.SlamNode attribute)</a>
 </li>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.lidar_callback">lidar_callback() (scripts.navigation_controller.NavigationController method)</a>
 
       <ul>
-        <li><a href="slam.html#scripts.slam.SlamNode.lidar_callback">(scripts.slam.SlamNode method)</a>
+        <li><a href="SLAM.html#scripts.slam.SlamNode.lidar_callback">(scripts.slam.SlamNode method)</a>
 </li>
         <li><a href="structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback">(scripts.structural_risk_assessment.StructuralRiskDummy method)</a>
 </li>
@@ -243,7 +243,7 @@
 </li>
       <li><a href="real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.manual_request_pub">manual_request_pub (scripts.real_time_alerts.RealTimeReport attribute)</a>
 </li>
-      <li><a href="slam.html#scripts.slam.SlamNode.map_pub">map_pub (scripts.slam.SlamNode attribute)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.map_pub">map_pub (scripts.slam.SlamNode attribute)</a>
 </li>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.mission_completed">mission_completed (scripts.navigation_controller.NavigationController attribute)</a>
 </li>
@@ -255,19 +255,13 @@
     module
 
       <ul>
-        <li><a href="navigation_controller.html#module-navigation_controller">navigation_controller</a>
-</li>
-        <li><a href="path_planner.html#module-path_planner_node">path_planner_node</a>
-</li>
-        <li><a href="real_time_alerts.html#module-real_time_report">real_time_report</a>
-</li>
         <li><a href="navigation_controller.html#module-scripts.navigation_controller">scripts.navigation_controller</a>
 </li>
         <li><a href="path_planner.html#module-scripts.path_planner">scripts.path_planner</a>
 </li>
         <li><a href="real_time_alerts.html#module-scripts.real_time_alerts">scripts.real_time_alerts</a>
 </li>
-        <li><a href="slam.html#module-scripts.slam">scripts.slam</a>
+        <li><a href="SLAM.html#module-scripts.slam">scripts.slam</a>
 </li>
         <li><a href="speaker_service.html#module-scripts.speaker_service">scripts.speaker_service</a>
 </li>
@@ -276,8 +270,6 @@
         <li><a href="triage_system.html#module-scripts.triage_system">scripts.triage_system</a>
 </li>
         <li><a href="victim_detection.html#module-scripts.victim_detection">scripts.victim_detection</a>
-</li>
-        <li><a href="slam.html#module-slam_node">slam_node</a>
 </li>
         <li><a href="integration_testing.html#module-tests.integration_test">tests.integration_test</a>
 </li>
@@ -294,15 +286,6 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    navigation_controller
-
-      <ul>
-        <li><a href="navigation_controller.html#module-navigation_controller">module</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController">NavigationController (class in scripts.navigation_controller)</a>
 </li>
   </ul></td>
@@ -313,7 +296,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.obstacle_detected">obstacle_detected (scripts.navigation_controller.NavigationController attribute)</a>
 </li>
-      <li><a href="slam.html#scripts.slam.SlamNode.odom_callback">odom_callback() (scripts.slam.SlamNode method)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.odom_callback">odom_callback() (scripts.slam.SlamNode method)</a>
 
       <ul>
         <li><a href="structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback">(scripts.structural_risk_assessment.StructuralRiskDummy method)</a>
@@ -335,22 +318,15 @@
 </li>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.path_callback">path_callback() (scripts.navigation_controller.NavigationController method)</a>
 </li>
-      <li>
-    path_planner_node
-
-      <ul>
-        <li><a href="path_planner.html#module-path_planner_node">module</a>
-</li>
-      </ul></li>
       <li><a href="path_planner.html#scripts.path_planner.PathPlannerNode.path_pub">path_pub (scripts.path_planner.PathPlannerNode attribute)</a>
 </li>
       <li><a href="path_planner.html#scripts.path_planner.PathPlannerNode">PathPlannerNode (class in scripts.path_planner)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.pose_callback">pose_callback() (scripts.navigation_controller.NavigationController method)</a>
 </li>
-      <li><a href="slam.html#scripts.slam.SlamNode.pose_pub">pose_pub (scripts.slam.SlamNode attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.pose_pub">pose_pub (scripts.slam.SlamNode attribute)</a>
 </li>
       <li><a href="triage_system.html#scripts.triage_system.TriageSystem.prev_img">prev_img (scripts.triage_system.TriageSystem attribute)</a>
 </li>
@@ -358,7 +334,7 @@
 </li>
       <li><a href="navigation_controller.html#scripts.navigation_controller.NavigationController.publish_mission_report">publish_mission_report() (scripts.navigation_controller.NavigationController method)</a>
 </li>
-      <li><a href="slam.html#scripts.slam.SlamNode.publish_outputs">publish_outputs() (scripts.slam.SlamNode method)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.publish_outputs">publish_outputs() (scripts.slam.SlamNode method)</a>
 </li>
       <li><a href="triage_system.html#scripts.triage_system.TriageSystem.publish_report">publish_report() (scripts.triage_system.TriageSystem method)</a>
 </li>
@@ -368,13 +344,6 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    real_time_report
-
-      <ul>
-        <li><a href="real_time_alerts.html#module-real_time_report">module</a>
-</li>
-      </ul></li>
       <li><a href="real_time_alerts.html#scripts.real_time_alerts.RealTimeReport">RealTimeReport (class in scripts.real_time_alerts)</a>
 </li>
       <li><a href="structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub">reassessment_pub (scripts.structural_risk_assessment.StructuralRiskDummy attribute)</a>
@@ -410,7 +379,7 @@
       <ul>
         <li><a href="path_planner.html#scripts.path_planner.PathPlannerNode.run">(scripts.path_planner.PathPlannerNode method)</a>
 </li>
-        <li><a href="slam.html#scripts.slam.SlamNode.run">(scripts.slam.SlamNode method)</a>
+        <li><a href="SLAM.html#scripts.slam.SlamNode.run">(scripts.slam.SlamNode method)</a>
 </li>
       </ul></li>
       <li><a href="real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.run_ros">run_ros() (scripts.real_time_alerts.RealTimeReport method)</a>
@@ -446,7 +415,7 @@
     scripts.slam
 
       <ul>
-        <li><a href="slam.html#module-scripts.slam">module</a>
+        <li><a href="SLAM.html#module-scripts.slam">module</a>
 </li>
       </ul></li>
       <li>
@@ -487,16 +456,9 @@
 </li>
       <li><a href="integration_testing.html#tests.integration_test.TestSARIntegration.setUpClass">setUpClass() (tests.integration_test.TestSARIntegration class method)</a>
 </li>
-      <li>
-    slam_node
-
-      <ul>
-        <li><a href="slam.html#module-slam_node">module</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode">SlamNode (class in scripts.slam)</a>
 </li>
-      </ul></li>
-      <li><a href="slam.html#scripts.slam.SlamNode">SlamNode (class in scripts.slam)</a>
-</li>
-      <li><a href="slam.html#scripts.slam.SlamNode.sonar_callback">sonar_callback() (scripts.slam.SlamNode method)</a>
+      <li><a href="SLAM.html#scripts.slam.SlamNode.sonar_callback">sonar_callback() (scripts.slam.SlamNode method)</a>
 
       <ul>
         <li><a href="structural_risk_assessment.html#scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback">(scripts.structural_risk_assessment.StructuralRiskDummy method)</a>

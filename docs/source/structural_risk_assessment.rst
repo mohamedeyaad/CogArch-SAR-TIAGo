@@ -90,36 +90,42 @@ Operator Interaction
 
 
 
-Key Performance Indicators (KPIs) for the system:
+Key Performance Indicators (KPIs):
 
-.. list-table:: Key Performance Indicators (KPIs) for Structural Risk Assessment
+.. list-table:: KPIs for Structural Risk Assessment
    :widths: 25 35 40
    :header-rows: 1
 
    * - KPI
      - Metric
      - Success Criteria
-   * - 1. Crack Detection Accuracy
-     - % of correctly identified cracks in a dataset
-     - >90% precision/recall on test images
-   * - 2. Wall Risk Classification
-     - Correct risk level (e.g., low/medium/high) assigned
-     - >85% accuracy on labeled structural risks
-   * - 3. Depth Consistency for Crack Areas
-     - Mean depth variance in crack regions
-     - Low variance = possible instability
-   * - 4. Fusion with Sensor Data (e.g., Force/Vibration)
-     - Logical consistency of fused input (e.g., cracks + stress reading = high risk)
-     - Sensor fusion increases classification confidence
-   * - 5. Response Latency
-     - Time from image acquisition to risk alert
-     - < 500ms in real-time ROS environment
-   * - 6. Proximity Decision Trigger
-     - % of correctly triggered "move closer" decisions for unclear structures
-     - >90% of low-confidence cases result in correct proximity behavior
-   * - 7. Alert Publishing Reliability
-     - % of structural risk alerts published correctly
-     - 100% of critical cases result in a published alert
+   * - 1. Crack Detection
+     - Number of cracks detected from RGB images
+     - Randomized dummy value [0–4]; verified image input
+   * - 2. Wall Anomaly Detection
+     - Number of wall anomalies detected from LiDAR scans
+     - Randomized dummy value [0–2]; valid LiDAR readings
+   * - 3. Hollow Space Detection
+     - Number of hollow spaces detected from sonar sensor
+     - Randomized dummy value [0–2]; valid sonar readings
+   * - 4. Force Magnitude Assessment
+     - Computed magnitude of force from wrist force-torque sensor
+     - Correct magnitude calculation; force >8N raises risk
+   * - 5. Risk Score Evaluation
+     - Aggregated weighted risk score based on sensor readings
+     - Risk status correctly classified (LOW, MEDIUM, HIGH)
+   * - 6. Risk Report Publication
+     - Publishing RiskReport message on /risk_alert
+     - Timely publication after evaluation
+   * - 7. Manual Reassessment Handling
+     - Responding to manual "reassess" requests
+     - Proper trigger of reassessment procedure
+   * - 8. Reassessment Movement
+     - Moving robot 1m forward for closer inspection
+     - Goal message sent on /move_base_simple/goal
+   * - 9. Reassessment Status Notification
+     - Publishing status updates on reassessment progress
+     - Correct updates on /reassessment_status topic
 
 
 Code

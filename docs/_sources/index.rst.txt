@@ -10,7 +10,7 @@ Welcome to the documentation!
    overview
    architecture
    communication
-   slam
+   SLAM
    path_planner
    navigation_controller
    speaker_service

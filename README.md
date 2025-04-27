@@ -63,12 +63,23 @@ The following is the system's **ROS graph**, showing topic-level communication b
 ![ROS Graph](docs/_images/rosgraph.png)
 
 ### Key Topics
-- **Mapping and Navigation**: `/slam_3d/current_pose`, `/slam_3d/map`, `/move_base_simple/goal`, `/planned_path`,`/mobile_base_controller/cmd_vel`.
-- **Victim Handling**: `/victim_alert`, `/victim_location`, `/triage_status`
+- **Mapping and Navigation**: `/slam_3d/current_pose`, `/slam_3d/map`, `/move_base_simple/goal`, `/planned_path`, `/mobile_base_controller/cmd_vel`.
+- **Victim Handling**: `/victim_alert`, `/victim_location`, `/triage_status`.
 - **Structural Assessment**: `/risk_alert`.
 - **Communication**: `/mission_report`.
 - **Supervisor Inputs**: `/manual_request`.
 - **Sensor Data Inputs**: `/audio`, `/scan`, `/sonar_base`, `/odometry`, `/xtion/rgb/image_raw`, `/xtion/depth/image_raw`, `/wrist_right_ft`.
+
+---
+
+## Custom ROS Messages and Services
+
+### Messages
+- **RiskReport.msg**: Contains details about detected structural risks, such as cracks or unstable walls.
+- **TriageReport.msg**: Provides information about the condition of detected victims, including their location and health status.
+
+### Services
+- **Speaker.srv**: Handles audio communication with victims or supervisors.
 
 ---
 
@@ -179,8 +190,12 @@ To replay the recorded ROS bag files alongside the nodes, use the `bags.launch` 
 roslaunch tiago_sar_cogarch bags.launch
 ```
 
-### 9. Run Integration Tests
+---
+
+## Integration Testing
+
 To verify the system's functionality, run the integration tests:
+
 ```bash
 rostest tiago_sar_cogarch integration_test.test
 ```

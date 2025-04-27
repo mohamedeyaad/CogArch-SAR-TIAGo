@@ -35,6 +35,14 @@ extensions = [
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
+html_context = {
+    "display_github": True, # Integrate GitHub
+    "github_user": "waleedelfieky",
+    "github_repo": "CogArch-SAR-TIAGo",
+    "github_version": "main",  # branch
+    "conf_py_path": "/docs/source/",  # path in the repo to the docs root
+}
+
 
 templates_path = ['_templates']
 exclude_patterns = []

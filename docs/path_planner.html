@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>path_planner &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+  <title>Path Planner &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="navigation_controller" href="navigation_controller.html" />
+    <link rel="next" title="Navigation Controller" href="navigation_controller.html" />
     <link rel="prev" title="slam" href="slam.html" /> 
 </head>
 
@@ -47,9 +47,8 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">path_planner</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Path Planner</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.current_pose"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.current_pose</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.goal_pose"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.goal_pose</span></code></a></li>
@@ -62,12 +61,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">real_time_alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 </ul>
 
         </div>
@@ -84,9 +84,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">path_planner</li>
+      <li class="breadcrumb-item active">Path Planner</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/path_planner.rst.txt" rel="nofollow"> View page source</a>
+              <a href="https://github.com/waleedelfieky/CogArch-SAR-TIAGo/blob/main/docs/source/path_planner.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -95,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="module-scripts.path_planner">
-<span id="path-planner"></span><h1>path_planner<a class="headerlink" href="#module-scripts.path_planner" title="Permalink to this heading"></a></h1>
+<span id="path-planner"></span><h1>Path Planner<a class="headerlink" href="#module-scripts.path_planner" title="Permalink to this heading"></a></h1>
 <span class="target" id="module-path_planner_node"></span><p>This node creates simple straight-line paths between the robot’s current position and requested goals.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode">
@@ -180,7 +180,7 @@ Generates fixed forward-facing orientations using tf quaternions.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="slam.html" class="btn btn-neutral float-left" title="slam" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="navigation_controller.html" class="btn btn-neutral float-right" title="navigation_controller" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="navigation_controller.html" class="btn btn-neutral float-right" title="Navigation Controller" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

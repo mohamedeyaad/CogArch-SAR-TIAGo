@@ -1,4 +1,4 @@
-navigation_controller
+Navigation Controller
 =====================
 
 .. automodule:: scripts.navigation_controller

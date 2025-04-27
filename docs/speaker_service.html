@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>speaker_service &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+  <title>Speaker Service &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Triage System" href="triage_system.html" />
-    <link rel="prev" title="navigation_controller" href="navigation_controller.html" /> 
+    <link rel="prev" title="Navigation Controller" href="navigation_controller.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,11 +47,10 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
-<li class="toctree-l1"><a class="reference internal" href="path_planner.html">path_planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">speaker_service</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Speaker Service</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#scripts.speaker_service.speaker_callback"><code class="docutils literal notranslate"><span class="pre">speaker_callback()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scripts.speaker_service.speaker_service"><code class="docutils literal notranslate"><span class="pre">speaker_service()</span></code></a></li>
 </ul>
@@ -59,7 +58,8 @@
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">real_time_alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 </ul>
 
         </div>
@@ -76,9 +76,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">speaker_service</li>
+      <li class="breadcrumb-item active">Speaker Service</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/speaker_service.rst.txt" rel="nofollow"> View page source</a>
+              <a href="https://github.com/waleedelfieky/CogArch-SAR-TIAGo/blob/main/docs/source/speaker_service.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -87,7 +87,7 @@
            <div itemprop="articleBody">
              
   <section id="module-scripts.speaker_service">
-<span id="speaker-service"></span><h1>speaker_service<a class="headerlink" href="#module-scripts.speaker_service" title="Permalink to this heading"></a></h1>
+<span id="speaker-service"></span><h1>Speaker Service<a class="headerlink" href="#module-scripts.speaker_service" title="Permalink to this heading"></a></h1>
 <p>Speaker Service Node.</p>
 <p>This script defines a ROS (Robot Operating System) service node that simulates a speaker’s behavior.
 It listens for service requests containing a message and randomly decides if the speaker successfully reproduces the message.</p>
@@ -126,7 +126,7 @@ and keeps the node running to handle incoming service requests.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="navigation_controller.html" class="btn btn-neutral float-left" title="navigation_controller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="navigation_controller.html" class="btn btn-neutral float-left" title="Navigation Controller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="triage_system.html" class="btn btn-neutral float-right" title="Triage System" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

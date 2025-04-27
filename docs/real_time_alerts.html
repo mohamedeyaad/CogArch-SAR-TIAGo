@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>real_time_alerts &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+  <title>Real Time Alerts &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integration Testing" href="integration_testing.html" />
     <link rel="prev" title="Victim Detection" href="victim_detection.html" /> 
 </head>
 
@@ -46,15 +47,14 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
-<li class="toctree-l1"><a class="reference internal" href="path_planner.html">path_planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">real_time_alerts</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Real Time Alerts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#scripts.real_time_alerts.RealTimeReport"><code class="docutils literal notranslate"><span class="pre">RealTimeReport</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#scripts.real_time_alerts.RealTimeReport.manual_request_pub"><code class="docutils literal notranslate"><span class="pre">RealTimeReport.manual_request_pub</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#scripts.real_time_alerts.RealTimeReport.root"><code class="docutils literal notranslate"><span class="pre">RealTimeReport.root</span></code></a></li>
@@ -76,6 +76,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
 </ul>
 
         </div>
@@ -92,9 +93,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">real_time_alerts</li>
+      <li class="breadcrumb-item active">Real Time Alerts</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/real_time_alerts.rst.txt" rel="nofollow"> View page source</a>
+              <a href="https://github.com/waleedelfieky/CogArch-SAR-TIAGo/blob/main/docs/source/real_time_alerts.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -103,7 +104,7 @@
            <div itemprop="articleBody">
              
   <section id="module-scripts.real_time_alerts">
-<span id="real-time-alerts"></span><h1>real_time_alerts<a class="headerlink" href="#module-scripts.real_time_alerts" title="Permalink to this heading"></a></h1>
+<span id="real-time-alerts"></span><h1>Real Time Alerts<a class="headerlink" href="#module-scripts.real_time_alerts" title="Permalink to this heading"></a></h1>
 <span class="target" id="module-real_time_report"></span><p>This node provides a graphical interface for monitoring search and rescue mission status,
 including victim triage, robot location, risk alerts, and mission reports. It also enables
 manual control through ROS topics.</p>
@@ -300,6 +301,7 @@ Validates input and publishes to /manual_request topic.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="victim_detection.html" class="btn btn-neutral float-left" title="Victim Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="integration_testing.html" class="btn btn-neutral float-right" title="Integration Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

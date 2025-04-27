@@ -10,7 +10,6 @@ Welcome to the documentation!
    overview
    architecture
    communication
-   integration_testing
    slam
    path_planner
    navigation_controller
@@ -19,6 +18,7 @@ Welcome to the documentation!
    structural_risk_assessment
    victim_detection
    real_time_alerts
+   integration_testing
    
 
    

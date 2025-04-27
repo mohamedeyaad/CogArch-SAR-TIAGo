@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.real_time_alerts &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">real_time_alerts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scripts.real_time_alerts</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.real_time_alerts</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: real_time_report</span>
+<span class="sd">    :platform: ROS</span>
+<span class="sd">    :synopsis: ROS node with GUI for real-time mission monitoring and manual control</span>
+
+<span class="sd">.. moduleauthor:: Your Name &lt;your.email@example.com&gt;</span>
+
+<span class="sd">This node provides a graphical interface for monitoring search and rescue mission status,</span>
+<span class="sd">including victim triage, robot location, risk alerts, and mission reports. It also enables</span>
+<span class="sd">manual control through ROS topics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriageReport</span><span class="p">,</span> <span class="n">RiskReport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nav_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Odometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoseStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="kn">import</span> <span class="n">font</span>  <span class="c1"># Import font module for custom fonts</span>
+
+<div class="viewcode-block" id="RealTimeReport"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RealTimeReport</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main GUI application class for real-time mission monitoring and control.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        manual_request_pub (rospy.Publisher): Publisher for manual intervention requests</span>
+<span class="sd">        root (tk.Tk): Main GUI window instance</span>
+<span class="sd">        ros_thread (threading.Thread): Separate thread for ROS operations</span>
+<span class="sd">        Various GUI widgets (labels, buttons, text fields)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes ROS node, GUI components, and ROS subscribers/publishers.</span>
+<span class="sd">        Configures multi-threaded architecture for simultaneous GUI and ROS operations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize ROS node</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;real_time_report&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Publisher for manual requests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manual_request_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/manual_request&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># GUI elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Real-Time Report&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;400x750&quot;</span><span class="p">)</span>  <span class="c1"># Set default window size</span>
+
+        <span class="c1"># Custom font</span>
+        <span class="n">header_font</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="s2">&quot;Helvetica&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+        <span class="n">label_font</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="s2">&quot;Arial&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Frames for better organization</span>
+        <span class="n">top_frame</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">top_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTH</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">middle_frame</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">middle_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTH</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">bottom_frame</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">bottom_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTH</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Labels for displaying information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triage_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">top_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Triage Report: Waiting...&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triage_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">top_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Victim Alert: Waiting...&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_location_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">top_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Robot Location: Waiting...&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_location_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">top_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Mission Report: Waiting...&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_alert_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">top_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Risk Alert: Waiting...&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">risk_alert_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Buttons for manual actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_button</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">middle_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Refresh Data&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refresh_data</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">header_font</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;#4CAF50&quot;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_button</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>  <span class="c1"># Center-align with padding</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_button</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">middle_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Send Test Update&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">send_test_update</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">header_font</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;#2196F3&quot;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_button</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>  <span class="c1"># Center-align with padding</span>
+
+        <span class="c1"># Input field for manual input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">middle_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Manual Request:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>  <span class="c1"># Center-align with padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_field</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">middle_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>  <span class="c1"># Center-align with padding</span>
+
+        <span class="c1"># Log window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">bottom_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Logs:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">header_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">bottom_frame</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;#f0f0f0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Status bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Status: Ready&quot;</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">SUNKEN</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">label_font</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;#e0e0e0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTTOM</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">protocol</span><span class="p">(</span><span class="s2">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_close</span><span class="p">)</span>
+
+        <span class="c1"># ROS Node running in a separate thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ros_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ros</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ros_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Move ROS subscribers here to ensure GUI elements are initialized</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/triage_status&quot;</span><span class="p">,</span> <span class="n">TriageReport</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triage_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/victim_alert&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/victim_location&quot;</span><span class="p">,</span> <span class="n">Odometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">victim_location_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/risk_alert&quot;</span><span class="p">,</span> <span class="n">RiskReport</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">risk_alert_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/slam_3d/current_pose&quot;</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_location_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/mission_report&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_callback</span><span class="p">)</span>
+
+        <span class="c1"># Tkinter loop running in the main thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RealTimeReport.refresh_data"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.refresh_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles manual data refresh request from GUI.</span>
+<span class="sd">        Updates status bar and logs the action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;Refreshing data...&quot;</span><span class="p">)</span>
+        <span class="c1"># Add logic to refresh data if needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Status: Data refreshed&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.send_test_update"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.send_test_update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends manual request from input field to ROS network.</span>
+<span class="sd">        Validates input and publishes to /manual_request topic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">manual_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">manual_request</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sending manual request: </span><span class="si">{</span><span class="n">manual_request</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">manual_request_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">manual_request</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Status: Manual request sent&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;No input provided for manual request.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.log_message"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.log_message">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manages log window updates with timestamped messages.</span>
+<span class="sd">        </span>
+<span class="sd">        :param message: Message text to display in log</span>
+<span class="sd">        :type message: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">see</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">END</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.run_ros"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.run_ros">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run_ros</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maintains ROS node functionality in separate thread.</span>
+<span class="sd">        Handles ROS message processing without blocking GUI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.triage_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.triage_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">triage_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes incoming triage reports from /triage_status topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Triage report message</span>
+<span class="sd">        :type msg: tiago_sar_cogarch.msg.TriageReport</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;[RealTimeReport] Received triage report.&quot;</span><span class="p">)</span>
+        <span class="n">update_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_report</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Triage Report&quot;</span><span class="p">,</span> <span class="n">update_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.process_report"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.process_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats TriageReport message for GUI display.</span>
+<span class="sd">        </span>
+<span class="sd">        :param report: Raw triage report data</span>
+<span class="sd">        :type report: tiago_sar_cogarch.msg.TriageReport</span>
+<span class="sd">        :return: Formatted string for GUI display</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conscious_status</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">consciousness</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">responsive_status</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">responsive</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">injury_status</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">injuries</span><span class="p">)</span> <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">injuries</span> <span class="k">else</span> <span class="s2">&quot;No injuries detected&quot;</span>
+        <span class="n">priority</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">priority</span>
+
+        <span class="c1"># Format location to 2 decimal places</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="n">update_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Victim Status:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Conscious: </span><span class="si">{</span><span class="n">conscious_status</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Responsive: </span><span class="si">{</span><span class="n">responsive_status</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Injuries: </span><span class="si">{</span><span class="n">injury_status</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Priority: </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">update_str</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.victim_alert_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.victim_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles victim alerts from /victim_alert topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Alert message containing victim information</span>
+<span class="sd">        :type msg: std_msgs.msg.String</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received victim alert: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Victim Alert&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.victim_location_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.victim_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes victim location updates from /victim_location topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Odometry message with victim coordinates</span>
+<span class="sd">        :type msg: nav_msgs.msg.Odometry</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Format location to 2 decimal places</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received victim location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Victim Location&quot;</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.robot_location_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.robot_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">robot_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates robot position from /slam_3d/current_pose topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: PoseStamped message with current robot location</span>
+<span class="sd">        :type msg: geometry_msgs.msg.PoseStamped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Format location to 2 decimal places</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received robot location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Robot Location&quot;</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.risk_alert_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.risk_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">risk_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes structural risk alerts from /risk_alert topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: RiskReport message with structural integrity data</span>
+<span class="sd">        :type msg: tiago_sar_cogarch.msg.RiskReport</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received risk alert: Status=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">, &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Cracks=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">crack_count</span><span class="si">}</span><span class="s2">, Wall Anomalies=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="si">}</span><span class="s2">, &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Hollow Spaces=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="si">}</span><span class="s2">, Force Magnitude=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">force_magnitude</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Risk Score=</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">risk_score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Format the risk alert message for display</span>
+        <span class="n">alert_message</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Risk Status: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Cracks: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">crack_count</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Wall Anomalies: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">wall_anomalies</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Hollow Spaces: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">hollow_spaces</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Force Magnitude: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">force_magnitude</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> N</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Risk Score: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">risk_score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Risk Alert&quot;</span><span class="p">,</span> <span class="n">alert_message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.mission_report_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.mission_report_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mission_report_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles mission completion notifications from /mission_report topic.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: String message with mission status</span>
+<span class="sd">        :type msg: std_msgs.msg.String</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Mission success: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Mission Report&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.update_gui"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.update_gui">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates specified GUI element with new information.</span>
+<span class="sd">        </span>
+<span class="sd">        :param label: Which GUI label to update</span>
+<span class="sd">        :type label: str</span>
+<span class="sd">        :param message: Content to display in the label</span>
+<span class="sd">        :type message: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Triage Report&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triage_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Triage Report: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Victim Alert&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">victim_alert_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Victim Alert: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Robot Location&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot_location_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Robot Location: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Mission Report&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mission Report: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Risk Alert&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">risk_alert_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Risk Alert: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RealTimeReport.on_close"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.on_close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles clean shutdown procedures for both ROS and GUI.</span>
+<span class="sd">        Ensures proper resource cleanup on window closure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">signal_shutdown</span><span class="p">(</span><span class="s2">&quot;GUI closed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Create an instance of the RealTimeReport class</span>
+    <span class="n">RealTimeReport</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

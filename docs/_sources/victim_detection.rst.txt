@@ -11,6 +11,8 @@ Diagram Overview
 **Behavioral Diagram Type:** UML State Machine Diagram
 
 This is appropriate for modeling the state-based behavior of a system component that changes states based on events, conditions, or actions.
+The state machine diagram was chosen for modeling this component because the system's behavior is fundamentally state-driven. In the victim detection task, the robot transitions between a series of well-defined operational modes ? such as Detecting Victims, Locating, and Reporting ? where each mode has specific activities, entry and exit actions, and conditions that trigger transitions to the next state.
+
 
 **Description of Components:**
 

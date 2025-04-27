@@ -14,6 +14,7 @@ Hardware used:
 
 Main Objectives:
 - 3D environment mapping
+- navigation
 - Victim search and triage
 - Structural risk assessment
 - Real-time communication with human operators

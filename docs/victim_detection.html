@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="real_time_alerts" href="real_time_alerts.html" />
     <link rel="prev" title="Structural Risk Assessment" href="structural_risk_assessment.html" /> 
 </head>
 
@@ -45,8 +46,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Components Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">speaker_service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Victim Detection</a><ul>
@@ -71,6 +76,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">real_time_alerts</a></li>
 </ul>
 
         </div>
@@ -103,7 +109,8 @@
 <section id="diagram-overview">
 <h2>Diagram Overview<a class="headerlink" href="#diagram-overview" title="Permalink to this heading"></a></h2>
 <p><strong>Behavioral Diagram Type:</strong> UML State Machine Diagram</p>
-<p>This is appropriate for modeling the state-based behavior of a system component that changes states based on events, conditions, or actions.</p>
+<p>This is appropriate for modeling the state-based behavior of a system component that changes states based on events, conditions, or actions.
+The state machine diagram was chosen for modeling this component because the system’s behavior is fundamentally state-driven. In the victim detection task, the robot transitions between a series of well-defined operational modes ? such as Detecting Victims, Locating, and Reporting ? where each mode has specific activities, entry and exit actions, and conditions that trigger transitions to the next state.</p>
 <p><strong>Description of Components:</strong></p>
 <p>The state machine diagram contains two composite states with substates and one simple state. It begins with an initial pseudostate and ends with a terminate pseudostate.</p>
 <p><strong>Process Overview:</strong></p>
@@ -303,7 +310,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.report_victim">
 <span class="sig-name descname"><span class="pre">report_victim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.report_victim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.report_victim" title="Permalink to this definition"></a></dt>
-<dd><p>Publishes a victim alert and location if depth image data is available.</p>
+<dd><p>Publishes a victim alert and a dummy location.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -327,6 +334,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="structural_risk_assessment.html" class="btn btn-neutral float-left" title="Structural Risk Assessment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="real_time_alerts.html" class="btn btn-neutral float-right" title="real_time_alerts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

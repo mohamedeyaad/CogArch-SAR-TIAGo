@@ -88,20 +88,7 @@ Operator Interaction
   * If the alert is received and acknowledged, the system logs the acknowledgment.
   * If not acknowledged, the system records it as "Not Acknowledged" and ends the current interaction flow.
 
-Code
---------
 
-The full workflow enables:
-
-* Continuous data acquisition from multiple sensors.
-* Fusion of sensory information for accurate structural defect detection.
-* Risk evaluation with different severity levels.
-* Dynamic mobility actions to enhance inspection quality.
-* Real-time interaction with human operators to ensure timely decision-making.
-
-This systematic, cyclic approach ensures robustness, reliability, and safety in structural risk assessment scenarios.
-
-Key Performance Indicators (KPIs) for the system:
 
 Key Performance Indicators (KPIs) for the system:
 
@@ -133,6 +120,22 @@ Key Performance Indicators (KPIs) for the system:
    * - 7. Alert Publishing Reliability
      - % of structural risk alerts published correctly
      - 100% of critical cases result in a published alert
+
+
+Code
+--------
+
+The full workflow enables:
+
+* Continuous data acquisition from multiple sensors.
+* Fusion of sensory information for accurate structural defect detection.
+* Risk evaluation with different severity levels.
+* Dynamic mobility actions to enhance inspection quality.
+* Real-time interaction with human operators to ensure timely decision-making.
+
+This systematic, cyclic approach ensures robustness, reliability, and safety in structural risk assessment scenarios.
+
+
 
 
 

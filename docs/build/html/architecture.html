@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Components Description" href="components.html" />
+    <link rel="next" title="Robot Communication Flow Description" href="communication.html" />
     <link rel="prev" title="Project Overview" href="overview.html" /> 
 </head>
 
@@ -46,11 +46,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">System Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Components Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">speaker_service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">real_time_alerts</a></li>
 </ul>
 
         </div>
@@ -80,14 +85,397 @@
   <section id="system-architecture">
 <h1>System Architecture<a class="headerlink" href="#system-architecture" title="Permalink to this heading"></a></h1>
 <a class="reference internal image-reference" href="_images/component_diagram.png"><img alt="System Architecture" src="_images/component_diagram.png" style="width: 600px;" /></a>
-<p>The system is composed of the following ROS nodes:
-- Navigation Node
-- Mapping Node
-- Victim Detection Node
-- Structural Assessment Node
-- Speaker Service
-- Supervisor Communication Node</p>
-<p>All components interact via ROS topics and services.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Design Patterns Table for Subsystems</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Subsystem</p></th>
+<th class="head"><p>Design Pattern</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>TIAGo Robot</p></td>
+<td><p>Singleton</p></td>
+<td><p>Ensures motor controllers (left/right) are single instances to prevent conflicting actuator commands.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Facade</p></td>
+<td><p>Provides a simplified interface for controlling multiple low-level hardware components like encoders, microphones, and motors.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>Adapter</p></td>
+<td><p>Bridges different hardware interfaces to a common control abstraction layer used by higher-level systems.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Perception</p></td>
+<td><p>Adapter</p></td>
+<td><p>Translates diverse sensor outputs (LiDAR, RGB-D, SONAR) into a unified format for SLAM or risk analysis.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>Observer</p></td>
+<td><p>Notifies other subsystems (e.g., navigation, risk assessment) when new perception data is available.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Decorator</p></td>
+<td><p>Dynamically adds processing layers (e.g., filtering, segmentation, labeling) to sensor data streams.</p></td>
+</tr>
+<tr class="row-even"><td><p>Navigation</p></td>
+<td><p>Strategy</p></td>
+<td><p>Allows dynamic switching of navigation algorithms depending on environmental conditions (e.g., debris-filled vs. open space).</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>State</p></td>
+<td><p>Manages operational modes such as idle, exploring, relocating, or returning, each with its own navigation behavior.</p></td>
+</tr>
+<tr class="row-even"><td><p>Structural Risk Assessment</p></td>
+<td><p>Observer</p></td>
+<td><p>Reacts to sensor updates and triggers reclassifications when changes are detected.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Command</p></td>
+<td><p>Encapsulates risk-based decisions into actions (e.g., move closer, send report) for flexible execution.</p></td>
+</tr>
+<tr class="row-even"><td><p>Victim Handling</p></td>
+<td><p>State</p></td>
+<td><p>Captures the workflow from detection to triage reporting through clear state transitions.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Command</p></td>
+<td><p>Encapsulates reporting or alerting of victim detection as discrete, reusable commands.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>Strategy</p></td>
+<td><p>Permits runtime selection among various triage evaluation techniques (e.g., sound, motion, interaction).</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Observer</p></td>
+<td><p>Allows real-time systems (e.g., communication) to subscribe to updates when a victim is found or classified.</p></td>
+</tr>
+<tr class="row-even"><td><p>Communication</p></td>
+<td><p>Observer</p></td>
+<td><p>Distributes alerts and mission updates to subscribed interfaces like the GUI or external operator systems. Reports or sends alert when victim detected.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Mediator</p></td>
+<td><p>Centralizes control of incoming/outgoing messages to simplify interaction across subsystems.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>Command</p></td>
+<td><p>Allows user-initiated commands (e.g., request deeper inspection) to be encapsulated and processed asynchronously.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">TIAGo Robot Components</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Left_Motor / Right_Motor</p></td>
+<td><p>Receive motor commands</p></td>
+<td><p>Stateful</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Motor speed and direction depend on previous commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Left_Motor_Controller / Right_Motor_Controller</p></td>
+<td><p>Control motor behavior</p></td>
+<td><p>Stateful</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Commands affect internal motor state.</p></td>
+</tr>
+<tr class="row-even"><td><p>Left_Encoder / Right_Encoder</p></td>
+<td><p>Provide odometry data</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Just outputs current readings without memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Battery</p></td>
+<td><p>Provide battery status</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Provides current charge level.</p></td>
+</tr>
+<tr class="row-even"><td><p>Microphones</p></td>
+<td><p>Stream audio data</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Raw audio data stream.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Speakers</p></td>
+<td><p>Play alert sounds or voice</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Sends flexible audio/text input.</p></td>
+</tr>
+<tr class="row-even"><td><p>Force_Sensor</p></td>
+<td><p>Provide contact force information</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Real-time force measurements.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Perception Components</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LiDAR</p></td>
+<td><p>Provide laser scans</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Standardized point cloud output.</p></td>
+</tr>
+<tr class="row-odd"><td><p>RGB-D Camera</p></td>
+<td><p>Provide RGB image + depth map</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Depth image and RGB frame synchronized.</p></td>
+</tr>
+<tr class="row-even"><td><p>Sensor</p></td>
+<td><p>Provide range data (Sonar)</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Outputs distance to obstacles.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Navigation Components</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SLAM</p></td>
+<td><p>Get current location, update 3D map</p></td>
+<td><p>Stateful</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Maintains internal map and robot pose.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Path_Planning</p></td>
+<td><p>Generate paths to a target</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Path calculation based on map and goals.</p></td>
+</tr>
+<tr class="row-even"><td><p>Navigation_Controller</p></td>
+<td><p>Manage movement commands</p></td>
+<td><p>Stateful</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Switches between moving, avoiding, recalculating.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Structural Risk Assessment Components</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sensor_Fusion</p></td>
+<td><p>Fuse LiDAR, RGB-D, SONAR data</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Combines different sources into a coherent structure.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cracks_Detection</p></td>
+<td><p>Analyze images for cracks</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Image input, detection results output.</p></td>
+</tr>
+<tr class="row-even"><td><p>Image_Processing</p></td>
+<td><p>Preprocess sensor images</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Filtering, noise reduction etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Risk_Classifier</p></td>
+<td><p>Assess wall risk levels</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Risk level classification based on sensor fusion.</p></td>
+</tr>
+<tr class="row-even"><td><p>Weak_Walls</p></td>
+<td><p>Store identified weak points</p></td>
+<td><p>Stateful</p></td>
+<td><p>Data</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Maintains a database of risk points.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Victim Handling Components</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Victim_Detection</p></td>
+<td><p>Detect injured individuals</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Processes sensor data for victim detection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Speech_to_Text</p></td>
+<td><p>Convert speech input to text</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Flexible natural language handling.</p></td>
+</tr>
+<tr class="row-even"><td><p>Triage_Classifier</p></td>
+<td><p>Assess victim condition</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Strongly-typed</p></td>
+<td><p>Classifies consciousness/responsiveness levels.</p></td>
+</tr>
+<tr class="row-odd"><td><p>speaker_service.py</p></td>
+<td><p>Trigger audio alerts or instructions</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Text-to-speech synthesis.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">Communication Components</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 16.7%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 13.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Interface</p></th>
+<th class="head"><p>Stateless/Stateful</p></th>
+<th class="head"><p>Data/Service</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mission_Reports</p></td>
+<td><p>Send structural damage/victim reports</p></td>
+<td><p>Stateful</p></td>
+<td><p>Service</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Flexible message composition (text, severity levels).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Real_Time_Alerts</p></td>
+<td><p>Push emergency updates</p></td>
+<td><p>Stateless</p></td>
+<td><p>Service</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Asynchronous alert delivery to operator.</p></td>
+</tr>
+<tr class="row-even"><td><p>GUI</p></td>
+<td><p>Display alerts and mission information</p></td>
+<td><p>Stateless</p></td>
+<td><p>Data</p></td>
+<td><p>Loosely-typed</p></td>
+<td><p>Flexible UI rendering.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
@@ -95,7 +483,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="overview.html" class="btn btn-neutral float-left" title="Project Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="components.html" class="btn btn-neutral float-right" title="Components Description" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="communication.html" class="btn btn-neutral float-right" title="Robot Communication Flow Description" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

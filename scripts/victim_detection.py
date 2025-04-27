@@ -36,8 +36,11 @@ class VictimDetector:
         rospy.Subscriber("/audio", AudioData, self.audio_callback)
         self.victim_loc_pub = rospy.Publisher("/victim_location", Odometry, queue_size=10)
         self.victim_alert_pub = rospy.Publisher("/victim_alert", String, queue_size=10)
+        
+        # Initialize attributes
         self.current_odom = None
         self.current_depth = None
+        self.latest_depth_image = None
 
     def rgb_callback(self, rgb_msg):
         """
@@ -157,38 +160,32 @@ class VictimDetector:
 
     def report_victim(self):
         """
-        Publishes a victim alert and location if depth image data is available.
+        Publishes a victim alert and a dummy location.
         """
-        alert_message = "Victim detected!"
-        self.victim_alert_pub.publish(alert_message)
-        rospy.loginfo("Published alert message!")
-        
+        # Publish a victim alert message
+        self.victim_alert_pub.publish("Victim detected!")
+        rospy.loginfo("Published victim alert!")
+
         # Check if depth image is available
-        if hasattr(self, 'latest_depth_image') and self.latest_depth_image is not None:
-            depth_img = self.latest_depth_image
-            
-            # Assume the victim is at the center of the image
-            center_x = depth_img.shape[1] // 2
-            center_y = depth_img.shape[0] // 2
+        if self.latest_depth_image is None:
+            rospy.logwarn("Depth image is missing!")
+            return
 
-            # Read the depth value from the center of the image
-            dummy_depth = depth_img[center_y, center_x]
+        # Get the depth value at the center of the image
+        center_x = self.latest_depth_image.shape[1] // 2
+        center_y = self.latest_depth_image.shape[0] // 2
+        depth_value = self.latest_depth_image[center_y, center_x]
 
-            # Debug: Log the dummy depth value (optional)
-            # rospy.loginfo(f"Dummy depth value at center: {dummy_depth}")	
-            
-            victim_odom = Odometry()
-            victim_odom.header = Header(stamp=rospy.Time.now(), frame_id="xtion_depth_optical_frame")
-            
-            victim_odom.pose.pose.position.x = 1.0  # dummy value
-            victim_odom.pose.pose.position.y = 0.0
-            victim_odom.pose.pose.position.z = float(dummy_depth) / 1000.0 if dummy_depth > 0 else 1.0
-            victim_odom.pose.pose.orientation.w = 1.0 
-            
-            self.victim_loc_pub.publish(victim_odom)
-            rospy.loginfo("Published victim location!")
-        else:
-            rospy.logwarn("Victim detected, but odometry is missing!")
+        # Use a default depth value if the center depth is invalid
+        if depth_value <= 0:
+            depth_value = 1000  # Default to 1 meter
+
+        # Publish a dummy victim location
+        victim_odom = Odometry()
+        victim_odom.header = Header(stamp=rospy.Time.now(), frame_id="xtion_depth_optical_frame")
+        victim_odom.pose.pose.position.z = depth_value / 1000.0  # Convert mm to meters
+        self.victim_loc_pub.publish(victim_odom)
+        rospy.loginfo("Published victim location!")
 
 if __name__ == "__main__":
     """

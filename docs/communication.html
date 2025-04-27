@@ -1,0 +1,226 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robot Communication Flow Description &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integration Testing" href="integration_testing.html" />
+    <link rel="prev" title="System Architecture" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Communication Flow Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nodes-and-their-roles">Nodes and Their Roles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="real_time_alerts.html">real_time_alerts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Robot Communication Flow Description</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/communication.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robot-communication-flow-description">
+<h1>Robot Communication Flow Description<a class="headerlink" href="#robot-communication-flow-description" title="Permalink to this heading"></a></h1>
+<p>This document describes the main nodes and their communication structure for the robot’s cognitive and navigation system, based on the provided ROS graph.</p>
+<a class="reference internal image-reference" href="_images/rosgraph.png"><img alt="_images/rosgraph.png" src="_images/rosgraph.png" style="width: 1500px;" /></a>
+<section id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p><strong>/audio</strong></p>
+<p>Provides audio input for the victim detection system.</p>
+</li>
+<li><p><strong>/rgb_raw</strong></p>
+<p>Provides raw RGB images from the RGB-D camera.</p>
+</li>
+<li><p><strong>/depth_raw</strong></p>
+<p>Provides raw depth images from the RGB-D camera.</p>
+</li>
+<li><p><strong>/odometry</strong></p>
+<p>Publishes odometry information about the mobile base’s movement.</p>
+</li>
+<li><p><strong>/sonar</strong></p>
+<p>Publishes sonar distance measurements.</p>
+</li>
+<li><p><strong>/scan_lidar</strong></p>
+<p>Publishes LiDAR scans used for mapping and obstacle avoidance.</p>
+</li>
+<li><p><strong>/force_sensor</strong> and <strong>/wrist_right_ft</strong></p>
+<p>Sensors included in the system but not currently connected in the displayed graph.</p>
+</li>
+</ul>
+</section>
+<section id="nodes-and-their-roles">
+<h2>Nodes and Their Roles<a class="headerlink" href="#nodes-and-their-roles" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p><strong>/xtion</strong></p>
+<p>A wrapper node that manages the RGB and Depth streams from the camera.</p>
+<p>Publishes:</p>
+<ul class="simple">
+<li><p>/xtion/rgb/image_raw</p></li>
+<li><p>/xtion/depth/image_raw</p></li>
+</ul>
+</li>
+<li><p><strong>/mobile_base_controller</strong></p>
+<p>Handles low-level movement of the robot base.</p>
+<p>Publishes:</p>
+<ul class="simple">
+<li><p>/mobile_base_controller/odom (odometry information)</p></li>
+</ul>
+</li>
+<li><p><strong>/slam</strong></p>
+<p>Performs 2D Simultaneous Localization and Mapping (SLAM) based on LiDAR and sonar data.</p>
+<p>Subscribes to:</p>
+<ul class="simple">
+<li><p>/scan</p></li>
+<li><p>/sonar_base</p></li>
+<li><p>/mobile_base_controller/odom</p></li>
+</ul>
+</li>
+<li><p><strong>/slam_3d</strong></p>
+<p>Provides the current 3D pose of the robot.</p>
+<p>Publishes:</p>
+<ul class="simple">
+<li><p>/slam_3d/current_pose</p></li>
+</ul>
+</li>
+<li><p><strong>/path_planner</strong></p>
+<p>Plans navigation paths using the robot’s current position.</p>
+<p>Subscribes to:</p>
+<ul class="simple">
+<li><p>/slam_3d/current_pose</p></li>
+</ul>
+<p>Publishes:</p>
+<ul class="simple">
+<li><p>/planned_path</p></li>
+</ul>
+</li>
+<li><p><strong>/navigation_controller</strong></p>
+<p>Executes the planned paths or manual goals sent by the operator.</p>
+<p>Subscribes to:</p>
+<ul class="simple">
+<li><p>/move_base_simple/goal</p></li>
+<li><p>/planned_path</p></li>
+</ul>
+<p>Publishes:</p>
+<ul class="simple">
+<li><p>/mission_report</p></li>
+</ul>
+</li>
+<li><p><strong>/move_base_simple</strong></p>
+<p>Interface to send simple manual goals to the robot.</p>
+<p>Subscribes to:</p>
+<ul class="simple">
+<li><p>/move_base_simple/goal</p></li>
+</ul>
+</li>
+<li><p><strong>/victim_detection</strong></p>
+<p>Detects victims using RGB images, depth images, and audio.</p>
+<p>Subscribes to:</p>
+<ul class="simple">
+<li><p>/xtion/rgb/image_raw</p></li>
+<li><p>/xtion/de</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="architecture.html" class="btn btn-neutral float-left" title="System Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="integration_testing.html" class="btn btn-neutral float-right" title="Integration Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.navigation_controller &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">real_time_alerts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scripts.navigation_controller</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.navigation_controller</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: navigation_controller</span>
+<span class="sd">    :platform: ROS</span>
+<span class="sd">    :synopsis: ROS node for robot navigation control and mission management</span>
+
+<span class="sd">.. moduleauthor:: Your Name &lt;your.email@example.com&gt;</span>
+
+<span class="sd">This node handles path following, obstacle avoidance, and mission status reporting.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Twist</span><span class="p">,</span> <span class="n">PoseStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nav_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">LaserScan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span>
+
+<div class="viewcode-block" id="NavigationController"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">NavigationController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main navigation control class implementing path following and obstacle avoidance.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        current_pose (PoseStamped): Stores current robot position from SLAM</span>
+<span class="sd">        path (Path): Current navigation path to follow</span>
+<span class="sd">        obstacle_detected (bool): Flag for obstacle presence</span>
+<span class="sd">        mission_completed (bool): Flag for mission completion status</span>
+<span class="sd">        cmd_pub (rospy.Publisher): Velocity command publisher</span>
+<span class="sd">        mission_report_pub (rospy.Publisher): Mission status publisher</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes node, subscribers, publishers, and state variables.</span>
+<span class="sd">        Sets up ROS communication infrastructure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;navigation_controller&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Subscribers</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/slam_3d/current_pose&#39;</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pose_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/planned_path&#39;</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_callback</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/scan&#39;</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lidar_callback</span><span class="p">)</span>
+
+        <span class="c1"># Publishers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/mobile_base_controller/cmd_vel&#39;</span><span class="p">,</span> <span class="n">Twist</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/mission_report&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obstacle_detected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_completed</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="NavigationController.pose_callback"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.pose_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pose_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates current robot pose from SLAM system.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Incoming pose message</span>
+<span class="sd">        :type msg: geometry_msgs.msg.PoseStamped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span> <span class="o">=</span> <span class="n">msg</span></div>
+
+<div class="viewcode-block" id="NavigationController.path_callback"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.path_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">path_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles new navigation paths and resets mission status.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Incoming path message</span>
+<span class="sd">        :type msg: nav_msgs.msg.Path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_completed</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Reset mission completion status</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Received a new path with </span><span class="si">%d</span><span class="s2"> points.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">poses</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="NavigationController.lidar_callback"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.lidar_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lidar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes lidar data for obstacle detection.</span>
+<span class="sd">        Implements simple threshold-based obstacle detection.</span>
+<span class="sd">        </span>
+<span class="sd">        :param msg: Incoming laser scan data</span>
+<span class="sd">        :type msg: sensor_msgs.msg.LaserScan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Dummy obstacle detection: if anything closer than 0.06 meters</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.06</span> <span class="k">for</span> <span class="n">distance</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">ranges</span> <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obstacle_detected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Obstacle detected! Stopping robot.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obstacle_detected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="NavigationController.move_along_path"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.move_along_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">move_along_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates velocity commands for path following.</span>
+<span class="sd">        Implements simple constant-speed movement when path is available and no obstacles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">twist</span> <span class="o">=</span> <span class="n">Twist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obstacle_detected</span><span class="p">:</span>
+            <span class="c1"># Dummy movement: always move forward with constant speed</span>
+            <span class="n">twist</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.2</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Moving along path.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">twist</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo_throttle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Stopped due to obstacle or missing path.&quot;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NavigationController.check_mission_completion"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.check_mission_completion">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_mission_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks mission completion status based on distance to final path point.</span>
+<span class="sd">        Publishes mission report when completion criteria are met.</span>
+<span class="sd">        Uses simplified distance threshold for demonstration purposes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obstacle_detected</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mission_completed</span><span class="p">:</span>
+            <span class="c1"># For simplicity, we&#39;ll assume the mission is complete when we reach the last point of the path</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">poses</span><span class="p">:</span>
+                <span class="c1"># Check if robot has reached the end of the path</span>
+                <span class="n">last_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">poses</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">distance_to_goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_pose</span><span class="o">.</span><span class="n">pose</span><span class="p">,</span> <span class="n">last_point</span><span class="o">.</span><span class="n">pose</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">distance_to_goal</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Threshold for reaching the goal</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mission_completed</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">publish_mission_report</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NavigationController.calculate_distance"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.calculate_distance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose1</span><span class="p">,</span> <span class="n">pose2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates Euclidean distance between two poses in 3D space.</span>
+<span class="sd">        </span>
+<span class="sd">        :param pose1: First position to compare</span>
+<span class="sd">        :type pose1: geometry_msgs.msg.Pose</span>
+<span class="sd">        :param pose2: Second position to compare</span>
+<span class="sd">        :type pose2: geometry_msgs.msg.Pose</span>
+<span class="sd">        :return: Straight-line distance between poses</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">pose2</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">pose1</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">pose2</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">pose1</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">pose2</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">-</span> <span class="n">pose1</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div>
+
+<div class="viewcode-block" id="NavigationController.publish_mission_report"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.publish_mission_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_mission_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publishes mission completion status to ROS network.</span>
+<span class="sd">        Implements simple success reporting for demonstration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mission_status</span> <span class="o">=</span> <span class="s2">&quot;Mission successfully completed!&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[NavigationController] Publishing mission success: </span><span class="si">{</span><span class="n">mission_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mission_report_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">mission_status</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NavigationController.run"><a class="viewcode-back" href="../../navigation_controller.html#scripts.navigation_controller.NavigationController.run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main control loop running at 10Hz.</span>
+<span class="sd">        Coordinates movement and mission status checks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_along_path</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_mission_completion</span><span class="p">()</span>
+            <span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Node entry point with exception handling for ROS interrupts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">NavigationController</span><span class="p">()</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ROSInterruptException</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

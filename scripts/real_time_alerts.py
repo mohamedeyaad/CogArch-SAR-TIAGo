@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+"""
+.. module:: real_time_report
+    :platform: ROS
+    :synopsis: ROS node with GUI for real-time mission monitoring and manual control
+
+.. moduleauthor:: Your Name <your.email@example.com>
+
+This node provides a graphical interface for monitoring search and rescue mission status,
+including victim triage, robot location, risk alerts, and mission reports. It also enables
+manual control through ROS topics.
+"""
+
 import rospy
 import threading
 import tkinter as tk
@@ -10,7 +22,21 @@ from geometry_msgs.msg import PoseStamped
 from tkinter import font  # Import font module for custom fonts
 
 class RealTimeReport:
+    """
+    Main GUI application class for real-time mission monitoring and control.
+    
+    Attributes:
+        manual_request_pub (rospy.Publisher): Publisher for manual intervention requests
+        root (tk.Tk): Main GUI window instance
+        ros_thread (threading.Thread): Separate thread for ROS operations
+        Various GUI widgets (labels, buttons, text fields)
+    """
+    
     def __init__(self):
+        """
+        Initializes ROS node, GUI components, and ROS subscribers/publishers.
+        Configures multi-threaded architecture for simultaneous GUI and ROS operations.
+        """
         # Initialize ROS node
         rospy.init_node('real_time_report')
 
@@ -94,7 +120,8 @@ class RealTimeReport:
 
     def refresh_data(self):
         """
-        Refreshes the data displayed in the GUI.
+        Handles manual data refresh request from GUI.
+        Updates status bar and logs the action.
         """
         self.log_message("Refreshing data...")
         # Add logic to refresh data if needed
@@ -102,7 +129,8 @@ class RealTimeReport:
 
     def send_test_update(self):
         """
-        Sends a manual request using the input field value.
+        Sends manual request from input field to ROS network.
+        Validates input and publishes to /manual_request topic.
         """
         manual_request = self.input_field.get()
         if manual_request:
@@ -114,7 +142,10 @@ class RealTimeReport:
 
     def log_message(self, message):
         """
-        Logs a message to the log window.
+        Manages log window updates with timestamped messages.
+        
+        :param message: Message text to display in log
+        :type message: str
         """
         self.log_window.config(state='normal')
         self.log_window.insert(tk.END, f"{message}\n")
@@ -123,13 +154,17 @@ class RealTimeReport:
 
     def run_ros(self):
         """
-        Run the ROS spin function in a separate thread.
+        Maintains ROS node functionality in separate thread.
+        Handles ROS message processing without blocking GUI.
         """
         rospy.spin()
 
     def triage_callback(self, msg):
         """
-        Callback for receiving triage reports. Updates the GUI.
+        Processes incoming triage reports from /triage_status topic.
+        
+        :param msg: Triage report message
+        :type msg: tiago_sar_cogarch.msg.TriageReport
         """
         rospy.loginfo("[RealTimeReport] Received triage report.")
         update_msg = self.process_report(msg)
@@ -137,7 +172,12 @@ class RealTimeReport:
 
     def process_report(self, report):
         """
-        Processes the triage report and generates a string update.
+        Formats TriageReport message for GUI display.
+        
+        :param report: Raw triage report data
+        :type report: tiago_sar_cogarch.msg.TriageReport
+        :return: Formatted string for GUI display
+        :rtype: str
         """
         conscious_status = report.consciousness.capitalize()
         responsive_status = report.responsive.capitalize()
@@ -160,14 +200,20 @@ class RealTimeReport:
 
     def victim_alert_callback(self, msg):
         """
-        Callback for receiving victim alert messages. Updates the GUI.
+        Handles victim alerts from /victim_alert topic.
+        
+        :param msg: Alert message containing victim information
+        :type msg: std_msgs.msg.String
         """
         rospy.loginfo(f"[RealTimeReport] Received victim alert: {msg.data}")
         self.update_gui("Victim Alert", msg.data)
 
     def victim_location_callback(self, msg):
         """
-        Callback for receiving victim location data. Updates the GUI.
+        Processes victim location updates from /victim_location topic.
+        
+        :param msg: Odometry message with victim coordinates
+        :type msg: nav_msgs.msg.Odometry
         """
         # Format location to 2 decimal places
         location = (f"({msg.pose.pose.position.x:.2f}, "
@@ -178,7 +224,10 @@ class RealTimeReport:
 
     def robot_location_callback(self, msg):
         """
-        Callback for receiving robot location data (from SLAM). Updates the GUI.
+        Updates robot position from /slam_3d/current_pose topic.
+        
+        :param msg: PoseStamped message with current robot location
+        :type msg: geometry_msgs.msg.PoseStamped
         """
         # Format location to 2 decimal places
         location = (f"({msg.pose.position.x:.2f}, "
@@ -189,7 +238,10 @@ class RealTimeReport:
 
     def risk_alert_callback(self, msg):
         """
-        Callback for receiving risk alert messages. Updates the GUI.
+        Processes structural risk alerts from /risk_alert topic.
+        
+        :param msg: RiskReport message with structural integrity data
+        :type msg: tiago_sar_cogarch.msg.RiskReport
         """
         rospy.loginfo(f"[RealTimeReport] Received risk alert: Status={msg.status}, "
                       f"Cracks={msg.crack_count}, Wall Anomalies={msg.wall_anomalies}, "
@@ -208,14 +260,22 @@ class RealTimeReport:
 
     def mission_report_callback(self, msg):
         """
-        Callback for receiving mission success notifications. Updates the GUI.
+        Handles mission completion notifications from /mission_report topic.
+        
+        :param msg: String message with mission status
+        :type msg: std_msgs.msg.String
         """
         rospy.loginfo(f"[RealTimeReport] Mission success: {msg.data}")
         self.update_gui("Mission Report", msg.data)
 
     def update_gui(self, label, message):
         """
-        Updates the appropriate label in the Tkinter GUI with the new message.
+        Updates specified GUI element with new information.
+        
+        :param label: Which GUI label to update
+        :type label: str
+        :param message: Content to display in the label
+        :type message: str
         """
         if label == "Triage Report":
             self.triage_label.config(text=f"Triage Report: {message}")
@@ -230,7 +290,8 @@ class RealTimeReport:
 
     def on_close(self):
         """
-        Called when the GUI window is closed.
+        Handles clean shutdown procedures for both ROS and GUI.
+        Ensures proper resource cleanup on window closure.
         """
         rospy.signal_shutdown("GUI closed.")
         self.root.quit()
@@ -239,4 +300,3 @@ class RealTimeReport:
 if __name__ == "__main__":
     # Create an instance of the RealTimeReport class
     RealTimeReport()
-

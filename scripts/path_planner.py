@@ -1,12 +1,34 @@
 #!/usr/bin/env python3
 
+"""
+.. module:: path_planner_node
+    :platform: ROS
+    :synopsis: Python node for generating navigation paths between current pose and goal
+
+.. moduleauthor:: Your Name <your.email@example.com>
+
+This node creates simple straight-line paths between the robot's current position and requested goals.
+"""
+
 import rospy
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 import tf
 
 class PathPlannerNode:
+    """
+    Path planning node that generates navigation paths between current position and goals.
+    
+    Attributes:
+        current_pose (PoseStamped): Stores latest known robot position
+        goal_pose (PoseStamped): Stores target destination coordinates
+        path_pub (rospy.Publisher): Publisher for generated navigation paths
+    """
+    
     def __init__(self):
+        """
+        Initializes node, subscribers, and publisher. Sets up ROS infrastructure.
+        """
         rospy.init_node('path_planner_node')
 
         # Subscribers
@@ -20,15 +42,32 @@ class PathPlannerNode:
         self.goal_pose = None
 
     def current_pose_callback(self, msg):
+        """
+        Updates current robot position from SLAM system.
+        
+        :param msg: Current pose estimate from SLAM
+        :type msg: geometry_msgs.msg.PoseStamped
+        """
         self.current_pose = msg
         rospy.loginfo_throttle(5, "Received current pose.")
 
     def goal_pose_callback(self, msg):
+        """
+        Handles new navigation goals and triggers path generation.
+        
+        :param msg: Target pose from user or higher-level system
+        :type msg: geometry_msgs.msg.PoseStamped
+        """
         self.goal_pose = msg
         rospy.loginfo("Received new goal pose.")
         self.generate_dummy_path()
 
     def generate_dummy_path(self):
+        """
+        Creates simple straight-line path with interpolated poses.
+        Uses linear interpolation between start and goal positions.
+        Generates fixed forward-facing orientations using tf quaternions.
+        """
         if self.current_pose is None or self.goal_pose is None:
             rospy.logwarn("Missing current or goal pose, can't generate path.")
             return
@@ -63,12 +102,17 @@ class PathPlannerNode:
         rospy.loginfo("Published dummy path.")
 
     def run(self):
+        """
+        Main node loop. Maintains ROS connection and processes callbacks.
+        """
         rospy.spin()
 
 if __name__ == '__main__':
+    """
+    Node entry point. Handles ROS initialization and exception catching.
+    """
     try:
         node = PathPlannerNode()
         node.run()
     except rospy.ROSInterruptException:
         pass
-

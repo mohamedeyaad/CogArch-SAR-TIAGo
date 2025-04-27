@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.speaker_service &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">speaker_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">real_time_alerts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scripts.speaker_service</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.speaker_service</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Speaker Service Node.</span>
+
+<span class="sd">This script defines a ROS (Robot Operating System) service node that simulates a speaker&#39;s behavior.</span>
+<span class="sd">It listens for service requests containing a message and randomly decides if the speaker successfully reproduces the message.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Speaker</span><span class="p">,</span> <span class="n">SpeakerResponse</span>
+
+<div class="viewcode-block" id="speaker_callback"><a class="viewcode-back" href="../../speaker_service.html#scripts.speaker_service.speaker_callback">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_callback</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Callback function for the speaker service.</span>
+
+<span class="sd">    This function is triggered when a service request is received.</span>
+<span class="sd">    It logs the received message, randomly determines whether the speaker</span>
+<span class="sd">    successfully reproduces the message, simulates a processing delay,</span>
+<span class="sd">    and returns the success status.</span>
+
+<span class="sd">    :param req: The service request containing the message to be reproduced.</span>
+<span class="sd">    :type req: tiago_sar_cogarch.srv.SpeakerRequest</span>
+<span class="sd">    :return: The response indicating whether the speaker successfully reproduced the message.</span>
+<span class="sd">    :rtype: tiago_sar_cogarch.srv.SpeakerResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received a message: </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">num</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">num</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;speaker failed&quot;</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Reproduce the message</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">SpeakerResponse</span><span class="p">(</span><span class="n">success</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="speaker_service"><a class="viewcode-back" href="../../speaker_service.html#scripts.speaker_service.speaker_service">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_service</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and runs the speaker service node.</span>
+
+<span class="sd">    This function initializes the ROS node, advertises the &#39;/speaker&#39; service,</span>
+<span class="sd">    and keeps the node running to handle incoming service requests.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;speaker_service&#39;</span><span class="p">)</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Service</span><span class="p">(</span><span class="s1">&#39;/speaker&#39;</span><span class="p">,</span> <span class="n">Speaker</span><span class="p">,</span> <span class="n">speaker_callback</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Speaker service is ready!&quot;</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main execution block.</span>
+
+<span class="sd">    If this script is run as the main program, it will start the speaker service node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">speaker_service</span><span class="p">()</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

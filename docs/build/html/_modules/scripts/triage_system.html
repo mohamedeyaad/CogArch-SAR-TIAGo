@@ -43,11 +43,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">path_planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">navigation_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">speaker_service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">real_time_alerts</a></li>
 </ul>
 
         </div>
@@ -264,19 +269,15 @@
 
 <div class="viewcode-block" id="TriageSystem.publish_report"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.publish_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conscious</span><span class="p">,</span> <span class="n">responsive</span><span class="p">,</span> <span class="n">injuries</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish triage assessment report.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            conscious (bool): Consciousness status from movement detection</span>
 <span class="sd">            responsive (bool): Responsiveness status from audio interaction</span>
 <span class="sd">            injuries (list): Detected injury descriptors</span>
-<span class="sd">            </span>
-<span class="sd">        Constructs TriageReport message with:</span>
-<span class="sd">        - Timestamped header</span>
-<span class="sd">        - Consciousness/responsiveness status</span>
-<span class="sd">        - Injury list</span>
-<span class="sd">        - Priority classification (URGENT/STABLE)</span>
-<span class="sd">        - Victim location coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_victim</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">report</span> <span class="o">=</span> <span class="n">TriageReport</span><span class="p">()</span>
         <span class="n">report</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">report</span><span class="o">.</span><span class="n">consciousness</span> <span class="o">=</span> <span class="s2">&quot;conscious&quot;</span> <span class="k">if</span> <span class="n">conscious</span> <span class="k">else</span> <span class="s2">&quot;unconscious&quot;</span>

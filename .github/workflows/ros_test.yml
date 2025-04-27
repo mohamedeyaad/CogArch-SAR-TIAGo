@@ -42,16 +42,8 @@ jobs:
         mv test_results/tiago_sar_cogarch/*.xml test_results/
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: integration-test-results
         path: test_results/*.xml
-
-    - name: Notify on failure
-      if: failure()
-      uses: actions/scripts/slack@master
-      with:
-        status: ${{ job.status }}
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

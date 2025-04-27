@@ -168,9 +168,8 @@ class VictimDetector:
 
         # Check if depth image is available
         if self.latest_depth_image is None:
-            rospy.logwarn("Depth image is missing!")
             return
-
+        
         # Get the depth value at the center of the image
         center_x = self.latest_depth_image.shape[1] // 2
         center_y = self.latest_depth_image.shape[0] // 2

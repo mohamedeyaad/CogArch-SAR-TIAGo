@@ -7,114 +7,39 @@ This document describes the main nodes and their communication structure for the
 	:width: 1500px
 
 
-Sensors
--------
+Mapping and Navigation
+-----------------------
+- **/slam_3d/current_pose**: Publishes the robot's current estimated position based on the SLAM 3D module.
+- **/slam_3d/map**: Provides the generated 3D rtab map used for navigation and environment understanding.
+- **/move_base_simple/goal**: Receives the target goal positions set by the user or a supervisor for autonomous navigation.
+- **/planned_path**: Publishes the planned path from the robot's current position to the target goal.
+- **/mobile_base_controller/cmd_vel**: Commands velocity inputs (linear and angular) for the robot's base movement.
 
-- **/audio**
+Victim Handling
+---------------
+- **/victim_alert**: Signals the detection of a potential victim.
+- **/victim_location**: Publishes the estimated position of a detected victim.
+- **/triage_status**: Sends updated information on the victim's condition after assessment.
 
-  Provides audio input for the victim detection system.
-
-- **/rgb_raw**
-
-  Provides raw RGB images from the RGB-D camera.
-
-- **/depth_raw**
-
-  Provides raw depth images from the RGB-D camera.
-
-- **/odometry**
-
-  Publishes odometry information about the mobile base's movement.
-
-- **/sonar**
-
-  Publishes sonar distance measurements.
-
-- **/scan_lidar**
-
-  Publishes LiDAR scans used for mapping and obstacle avoidance.
-
-- **/force_sensor** and **/wrist_right_ft**
-
-  Sensors included in the system but not currently connected in the displayed graph.
-
-Nodes and Their Roles
+Structural Assessment
 ----------------------
+- **/risk_alert**: Publishes warnings or alerts regarding detected structural risks or hazards in the environment.
 
-- **/xtion**
+Communication
+-------------
+- **/mission_report**: Summarizes and sends mission status reports, including task progress and incident findings.
 
-  A wrapper node that manages the RGB and Depth streams from the camera.
+Supervisor Inputs
+-----------------
+- **/manual_request**: Receives manual intervention or task override commands from the supervising operator.
 
-  Publishes:
-  
-  - /xtion/rgb/image_raw
-  - /xtion/depth/image_raw
-
-- **/mobile_base_controller**
-
-  Handles low-level movement of the robot base.
-
-  Publishes:
-
-  - /mobile_base_controller/odom (odometry information)
-
-- **/slam**
-
-  Performs 2D Simultaneous Localization and Mapping (SLAM) based on LiDAR and sonar data.
-
-  Subscribes to:
-
-  - /scan
-  - /sonar_base
-  - /mobile_base_controller/odom
-
-- **/slam_3d**
-
-  Provides the current 3D pose of the robot.
-
-  Publishes:
-
-  - /slam_3d/current_pose
-
-- **/path_planner**
-
-  Plans navigation paths using the robot’s current position.
-
-  Subscribes to:
-
-  - /slam_3d/current_pose
-
-  Publishes:
-
-  - /planned_path
-
-- **/navigation_controller**
-
-  Executes the planned paths or manual goals sent by the operator.
-
-  Subscribes to:
-
-  - /move_base_simple/goal
-  - /planned_path
-
-  Publishes:
-
-  - /mission_report
-
-- **/move_base_simple**
-
-  Interface to send simple manual goals to the robot.
-
-  Subscribes to:
-
-  - /move_base_simple/goal
-
-- **/victim_detection**
-
-  Detects victims using RGB images, depth images, and audio.
-
-  Subscribes to:
-
-  - /xtion/rgb/image_raw
-  - /xtion/de
+Sensor Data Inputs
+------------------
+- **/audio**: Captures audio data from the environment, potentially used for victim detection or situational awareness.
+- **/scan**: Publishes laser scanner data for obstacle detection and environment mapping.
+- **/sonar_base**: Provides sonar-based proximity data.
+- **/odometry**: Supplies odometry information to estimate movement and track robot position over time.
+- **/xtion/rgb/image_raw**: Streams raw RGB images from the Xtion camera for visual processing.
+- **/xtion/depth/image_raw**: Streams raw depth images from the Xtion camera to support 3D mapping and perception tasks.
+- **/wrist_right_ft**: Publishes force and torque measurements from the right wrist-mounted sensor, used for fine manipulation or environment interaction.
 

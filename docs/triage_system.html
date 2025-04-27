@@ -47,7 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SLAM.html">SLAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
@@ -237,20 +237,13 @@ with the nature of this component.</p></li>
 <td><p>Matches expected content and topic</p></td>
 </tr>
 <tr class="row-even"><td><ol class="arabic simple" start="5">
-<li><p>Interaction Effectiveness</p></li>
-</ol>
-</td>
-<td><p>% of successful voice interactions initiated and answered</p></td>
-<td><p>≥90% of interaction completes successfully</p></td>
-</tr>
-<tr class="row-odd"><td><ol class="arabic simple" start="6">
 <li><p>ROS Triage Communication Reliability</p></li>
 </ol>
 </td>
 <td><p>% of successful messages on /triage_report</p></td>
 <td><p>100% success rate on real detections</p></td>
 </tr>
-<tr class="row-even"><td><ol class="arabic simple" start="7">
+<tr class="row-odd"><td><ol class="arabic simple" start="6">
 <li><p>Latency of Evaluation + Reporting</p></li>
 </ol>
 </td>
@@ -259,45 +252,6 @@ with the nature of this component.</p></li>
 </tr>
 </tbody>
 </table>
-<p>Suggested Unit Tests for These KPIs</p>
-<ol class="arabic simple">
-<li><p><strong>Consciousness Detection</strong></p>
-<ul class="simple">
-<li><p>Input: RGB-D sequence with no motion or response.</p></li>
-<li><p>Output: Classification = unconscious</p></li>
-<li><p>Variation: Add variation with head/eye motion → Expect “conscious”.</p></li>
-</ul>
-</li>
-<li><p><strong>Responsiveness to Robot Prompt</strong></p>
-<ul class="simple">
-<li><p>Simulate speaker prompt and test response audio.</p></li>
-<li><p>Expect: logic correctly identifies presence or absence of vocal/movement response.</p></li>
-</ul>
-</li>
-<li><p><strong>Injury Severity Detection</strong></p>
-<ul class="simple">
-<li><p>Simulate victim image with visible blood (color cue) or slumped posture.</p></li>
-<li><p>Expect: correct injury category (e.g., bleeding, suspected fracture).</p></li>
-</ul>
-</li>
-<li><p><strong>Triage Message Format</strong></p>
-<ul class="simple">
-<li><p>Input: Detected condition: “unconscious, critical”.</p></li>
-<li><p>Output: Published message content should be “/triage_report: unconscious, critical”.</p></li>
-</ul>
-</li>
-<li><p><strong>Interaction Workflow</strong></p>
-<ul class="simple">
-<li><p>Test: Simulate speaker text-to-speech prompt → simulate microphone input reply.</p></li>
-<li><p>Test if entire interaction cycle completes (prompt listen → classify).</p></li>
-</ul>
-</li>
-<li><p><strong>Communication Integrity</strong></p>
-<ul class="simple">
-<li><p>Test: ROS message sent to /victim_triage → test it’s received with correct timestamp and victim.</p></li>
-</ul>
-</li>
-</ol>
 </section>
 <section id="module-scripts.triage_system">
 <span id="code"></span><h2>code<a class="headerlink" href="#module-scripts.triage_system" title="Permalink to this heading"></a></h2>

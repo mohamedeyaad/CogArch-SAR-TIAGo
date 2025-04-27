@@ -1,4 +1,4 @@
-slam
+SLAM
 =====
 
 .. automodule:: scripts.slam

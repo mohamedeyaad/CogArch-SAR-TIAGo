@@ -106,9 +106,6 @@ State 3: Reporting
    * - Alert Latency
      - Time between detection and message publication
      - ≤500ms from detection to message receipt
-   * - Localization Accuracy
-     - Deviation between robot’s reported and actual location
-     - ≤0.5m deviation
 
 code
 --------

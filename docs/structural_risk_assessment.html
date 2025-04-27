@@ -47,7 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SLAM.html">SLAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
@@ -206,9 +206,9 @@ The diagram is organized into five main sections: <strong>Sensor Interface</stro
 </ul>
 </li>
 </ul>
-<p>Key Performance Indicators (KPIs) for the system:</p>
+<p>Key Performance Indicators (KPIs):</p>
 <table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Key Performance Indicators (KPIs) for Structural Risk Assessment</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">KPIs for Structural Risk Assessment</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -222,53 +222,67 @@ The diagram is organized into five main sections: <strong>Sensor Interface</stro
 </thead>
 <tbody>
 <tr class="row-even"><td><ol class="arabic simple">
-<li><p>Crack Detection Accuracy</p></li>
+<li><p>Crack Detection</p></li>
 </ol>
 </td>
-<td><p>% of correctly identified cracks in a dataset</p></td>
-<td><p>&gt;90% precision/recall on test images</p></td>
+<td><p>Number of cracks detected from RGB images</p></td>
+<td><p>Randomized dummy value [0–4]; verified image input</p></td>
 </tr>
 <tr class="row-odd"><td><ol class="arabic simple" start="2">
-<li><p>Wall Risk Classification</p></li>
+<li><p>Wall Anomaly Detection</p></li>
 </ol>
 </td>
-<td><p>Correct risk level (e.g., low/medium/high) assigned</p></td>
-<td><p>&gt;85% accuracy on labeled structural risks</p></td>
+<td><p>Number of wall anomalies detected from LiDAR scans</p></td>
+<td><p>Randomized dummy value [0–2]; valid LiDAR readings</p></td>
 </tr>
 <tr class="row-even"><td><ol class="arabic simple" start="3">
-<li><p>Depth Consistency for Crack Areas</p></li>
+<li><p>Hollow Space Detection</p></li>
 </ol>
 </td>
-<td><p>Mean depth variance in crack regions</p></td>
-<td><p>Low variance = possible instability</p></td>
+<td><p>Number of hollow spaces detected from sonar sensor</p></td>
+<td><p>Randomized dummy value [0–2]; valid sonar readings</p></td>
 </tr>
 <tr class="row-odd"><td><ol class="arabic simple" start="4">
-<li><p>Fusion with Sensor Data (e.g., Force/Vibration)</p></li>
+<li><p>Force Magnitude Assessment</p></li>
 </ol>
 </td>
-<td><p>Logical consistency of fused input (e.g., cracks + stress reading = high risk)</p></td>
-<td><p>Sensor fusion increases classification confidence</p></td>
+<td><p>Computed magnitude of force from wrist force-torque sensor</p></td>
+<td><p>Correct magnitude calculation; force &gt;8N raises risk</p></td>
 </tr>
 <tr class="row-even"><td><ol class="arabic simple" start="5">
-<li><p>Response Latency</p></li>
+<li><p>Risk Score Evaluation</p></li>
 </ol>
 </td>
-<td><p>Time from image acquisition to risk alert</p></td>
-<td><p>&lt; 500ms in real-time ROS environment</p></td>
+<td><p>Aggregated weighted risk score based on sensor readings</p></td>
+<td><p>Risk status correctly classified (LOW, MEDIUM, HIGH)</p></td>
 </tr>
 <tr class="row-odd"><td><ol class="arabic simple" start="6">
-<li><p>Proximity Decision Trigger</p></li>
+<li><p>Risk Report Publication</p></li>
 </ol>
 </td>
-<td><p>% of correctly triggered “move closer” decisions for unclear structures</p></td>
-<td><p>&gt;90% of low-confidence cases result in correct proximity behavior</p></td>
+<td><p>Publishing RiskReport message on /risk_alert</p></td>
+<td><p>Timely publication after evaluation</p></td>
 </tr>
 <tr class="row-even"><td><ol class="arabic simple" start="7">
-<li><p>Alert Publishing Reliability</p></li>
+<li><p>Manual Reassessment Handling</p></li>
 </ol>
 </td>
-<td><p>% of structural risk alerts published correctly</p></td>
-<td><p>100% of critical cases result in a published alert</p></td>
+<td><p>Responding to manual “reassess” requests</p></td>
+<td><p>Proper trigger of reassessment procedure</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="8">
+<li><p>Reassessment Movement</p></li>
+</ol>
+</td>
+<td><p>Moving robot 1m forward for closer inspection</p></td>
+<td><p>Goal message sent on /move_base_simple/goal</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="9">
+<li><p>Reassessment Status Notification</p></li>
+</ol>
+</td>
+<td><p>Publishing status updates on reassessment progress</p></td>
+<td><p>Correct updates on /reassessment_status topic</p></td>
 </tr>
 </tbody>
 </table>

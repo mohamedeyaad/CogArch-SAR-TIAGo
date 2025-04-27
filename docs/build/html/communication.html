@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="slam" href="slam.html" />
+    <link rel="next" title="SLAM" href="SLAM.html" />
     <link rel="prev" title="System Architecture" href="architecture.html" /> 
 </head>
 
@@ -47,11 +47,15 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Communication Flow Description</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#nodes-and-their-roles">Nodes and Their Roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapping-and-navigation">Mapping and Navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#victim-handling">Victim Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structural-assessment">Structural Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#communication">Communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supervisor-inputs">Supervisor Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sensor-data-inputs">Sensor Data Inputs</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="slam.html">slam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SLAM.html">SLAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="path_planner.html">Path Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="navigation_controller.html">Navigation Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="speaker_service.html">Speaker Service</a></li>
@@ -90,104 +94,52 @@
 <h1>Robot Communication Flow Description<a class="headerlink" href="#robot-communication-flow-description" title="Permalink to this heading"></a></h1>
 <p>This document describes the main nodes and their communication structure for the robot’s cognitive and navigation system, based on the provided ROS graph.</p>
 <a class="reference internal image-reference" href="_images/rosgraph.png"><img alt="_images/rosgraph.png" src="_images/rosgraph.png" style="width: 1500px;" /></a>
-<section id="sensors">
-<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this heading"></a></h2>
-<ul>
-<li><p><strong>/audio</strong></p>
-<p>Provides audio input for the victim detection system.</p>
-</li>
-<li><p><strong>/rgb_raw</strong></p>
-<p>Provides raw RGB images from the RGB-D camera.</p>
-</li>
-<li><p><strong>/depth_raw</strong></p>
-<p>Provides raw depth images from the RGB-D camera.</p>
-</li>
-<li><p><strong>/odometry</strong></p>
-<p>Publishes odometry information about the mobile base’s movement.</p>
-</li>
-<li><p><strong>/sonar</strong></p>
-<p>Publishes sonar distance measurements.</p>
-</li>
-<li><p><strong>/scan_lidar</strong></p>
-<p>Publishes LiDAR scans used for mapping and obstacle avoidance.</p>
-</li>
-<li><p><strong>/force_sensor</strong> and <strong>/wrist_right_ft</strong></p>
-<p>Sensors included in the system but not currently connected in the displayed graph.</p>
-</li>
+<section id="mapping-and-navigation">
+<h2>Mapping and Navigation<a class="headerlink" href="#mapping-and-navigation" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>/slam_3d/current_pose</strong>: Publishes the robot’s current estimated position based on the SLAM 3D module.</p></li>
+<li><p><strong>/slam_3d/map</strong>: Provides the generated 3D rtab map used for navigation and environment understanding.</p></li>
+<li><p><strong>/move_base_simple/goal</strong>: Receives the target goal positions set by the user or a supervisor for autonomous navigation.</p></li>
+<li><p><strong>/planned_path</strong>: Publishes the planned path from the robot’s current position to the target goal.</p></li>
+<li><p><strong>/mobile_base_controller/cmd_vel</strong>: Commands velocity inputs (linear and angular) for the robot’s base movement.</p></li>
 </ul>
 </section>
-<section id="nodes-and-their-roles">
-<h2>Nodes and Their Roles<a class="headerlink" href="#nodes-and-their-roles" title="Permalink to this heading"></a></h2>
-<ul>
-<li><p><strong>/xtion</strong></p>
-<p>A wrapper node that manages the RGB and Depth streams from the camera.</p>
-<p>Publishes:</p>
+<section id="victim-handling">
+<h2>Victim Handling<a class="headerlink" href="#victim-handling" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>/xtion/rgb/image_raw</p></li>
-<li><p>/xtion/depth/image_raw</p></li>
+<li><p><strong>/victim_alert</strong>: Signals the detection of a potential victim.</p></li>
+<li><p><strong>/victim_location</strong>: Publishes the estimated position of a detected victim.</p></li>
+<li><p><strong>/triage_status</strong>: Sends updated information on the victim’s condition after assessment.</p></li>
 </ul>
-</li>
-<li><p><strong>/mobile_base_controller</strong></p>
-<p>Handles low-level movement of the robot base.</p>
-<p>Publishes:</p>
+</section>
+<section id="structural-assessment">
+<h2>Structural Assessment<a class="headerlink" href="#structural-assessment" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>/mobile_base_controller/odom (odometry information)</p></li>
+<li><p><strong>/risk_alert</strong>: Publishes warnings or alerts regarding detected structural risks or hazards in the environment.</p></li>
 </ul>
-</li>
-<li><p><strong>/slam</strong></p>
-<p>Performs 2D Simultaneous Localization and Mapping (SLAM) based on LiDAR and sonar data.</p>
-<p>Subscribes to:</p>
+</section>
+<section id="communication">
+<h2>Communication<a class="headerlink" href="#communication" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>/scan</p></li>
-<li><p>/sonar_base</p></li>
-<li><p>/mobile_base_controller/odom</p></li>
+<li><p><strong>/mission_report</strong>: Summarizes and sends mission status reports, including task progress and incident findings.</p></li>
 </ul>
-</li>
-<li><p><strong>/slam_3d</strong></p>
-<p>Provides the current 3D pose of the robot.</p>
-<p>Publishes:</p>
+</section>
+<section id="supervisor-inputs">
+<h2>Supervisor Inputs<a class="headerlink" href="#supervisor-inputs" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>/slam_3d/current_pose</p></li>
+<li><p><strong>/manual_request</strong>: Receives manual intervention or task override commands from the supervising operator.</p></li>
 </ul>
-</li>
-<li><p><strong>/path_planner</strong></p>
-<p>Plans navigation paths using the robot’s current position.</p>
-<p>Subscribes to:</p>
+</section>
+<section id="sensor-data-inputs">
+<h2>Sensor Data Inputs<a class="headerlink" href="#sensor-data-inputs" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>/slam_3d/current_pose</p></li>
-</ul>
-<p>Publishes:</p>
-<ul class="simple">
-<li><p>/planned_path</p></li>
-</ul>
-</li>
-<li><p><strong>/navigation_controller</strong></p>
-<p>Executes the planned paths or manual goals sent by the operator.</p>
-<p>Subscribes to:</p>
-<ul class="simple">
-<li><p>/move_base_simple/goal</p></li>
-<li><p>/planned_path</p></li>
-</ul>
-<p>Publishes:</p>
-<ul class="simple">
-<li><p>/mission_report</p></li>
-</ul>
-</li>
-<li><p><strong>/move_base_simple</strong></p>
-<p>Interface to send simple manual goals to the robot.</p>
-<p>Subscribes to:</p>
-<ul class="simple">
-<li><p>/move_base_simple/goal</p></li>
-</ul>
-</li>
-<li><p><strong>/victim_detection</strong></p>
-<p>Detects victims using RGB images, depth images, and audio.</p>
-<p>Subscribes to:</p>
-<ul class="simple">
-<li><p>/xtion/rgb/image_raw</p></li>
-<li><p>/xtion/de</p></li>
-</ul>
-</li>
+<li><p><strong>/audio</strong>: Captures audio data from the environment, potentially used for victim detection or situational awareness.</p></li>
+<li><p><strong>/scan</strong>: Publishes laser scanner data for obstacle detection and environment mapping.</p></li>
+<li><p><strong>/sonar_base</strong>: Provides sonar-based proximity data.</p></li>
+<li><p><strong>/odometry</strong>: Supplies odometry information to estimate movement and track robot position over time.</p></li>
+<li><p><strong>/xtion/rgb/image_raw</strong>: Streams raw RGB images from the Xtion camera for visual processing.</p></li>
+<li><p><strong>/xtion/depth/image_raw</strong>: Streams raw depth images from the Xtion camera to support 3D mapping and perception tasks.</p></li>
+<li><p><strong>/wrist_right_ft</strong>: Publishes force and torque measurements from the right wrist-mounted sensor, used for fine manipulation or environment interaction.</p></li>
 </ul>
 </section>
 </section>
@@ -197,7 +149,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="architecture.html" class="btn btn-neutral float-left" title="System Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="slam.html" class="btn btn-neutral float-right" title="slam" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SLAM.html" class="btn btn-neutral float-right" title="SLAM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -123,48 +123,13 @@ Key Performance Indicators (KPIs) for the Triage System:
    * - 4. Triage Message Accuracy
      - Correct formatting and content of published triage info
      - Matches expected content and topic
-   * - 5. Interaction Effectiveness
-     - % of successful voice interactions initiated and answered
-     - ≥90% of interaction completes successfully
-   * - 6. ROS Triage Communication Reliability
+   * - 5. ROS Triage Communication Reliability
      - % of successful messages on /triage_report
      - 100% success rate on real detections
-   * - 7. Latency of Evaluation + Reporting
+   * - 6. Latency of Evaluation + Reporting
      - Time from first input signal (image/audio) to triage report
      - ≤1.5 seconds
 
-
-Suggested Unit Tests for These KPIs
-
-1. **Consciousness Detection**
-   
-   - Input: RGB-D sequence with no motion or response.
-   - Output: Classification = unconscious
-   - Variation: Add variation with head/eye motion → Expect "conscious".
-
-2. **Responsiveness to Robot Prompt**
-   
-   - Simulate speaker prompt and test response audio.
-   - Expect: logic correctly identifies presence or absence of vocal/movement response.
-
-3. **Injury Severity Detection**
-   
-   - Simulate victim image with visible blood (color cue) or slumped posture.
-   - Expect: correct injury category (e.g., bleeding, suspected fracture).
-
-4. **Triage Message Format**
-   
-   - Input: Detected condition: "unconscious, critical".
-   - Output: Published message content should be "/triage_report: unconscious, critical".
-
-5. **Interaction Workflow**
-   
-   - Test: Simulate speaker text-to-speech prompt → simulate microphone input reply.
-   - Test if entire interaction cycle completes (prompt listen → classify).
-
-6. **Communication Integrity**
-   
-   - Test: ROS message sent to /victim_triage → test it's received with correct timestamp and victim.
 
 code
 -----

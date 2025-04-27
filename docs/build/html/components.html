@@ -1,0 +1,1697 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Components &mdash; Post-Earthquake Search and Rescue Robot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integration Testing KPIs and Results" href="integration_testing.html" />
+    <link rel="prev" title="Robot Communication Flow Description" href="communication.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Post-Earthquake Search and Rescue Robot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="communication.html">Robot Communication Flow Description</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-scripts.slam">SLAM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.slam.SlamNode"><code class="docutils literal notranslate"><span class="pre">SlamNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.latest_pose"><code class="docutils literal notranslate"><span class="pre">SlamNode.latest_pose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.map_pub"><code class="docutils literal notranslate"><span class="pre">SlamNode.map_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.pose_pub"><code class="docutils literal notranslate"><span class="pre">SlamNode.pose_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.depth_callback"><code class="docutils literal notranslate"><span class="pre">SlamNode.depth_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.lidar_callback"><code class="docutils literal notranslate"><span class="pre">SlamNode.lidar_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.odom_callback"><code class="docutils literal notranslate"><span class="pre">SlamNode.odom_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.publish_outputs"><code class="docutils literal notranslate"><span class="pre">SlamNode.publish_outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.run"><code class="docutils literal notranslate"><span class="pre">SlamNode.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.slam.SlamNode.sonar_callback"><code class="docutils literal notranslate"><span class="pre">SlamNode.sonar_callback()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scripts.path_planner">Path Planner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.current_pose"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.current_pose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.goal_pose"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.goal_pose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.path_pub"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.path_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.current_pose_callback"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.current_pose_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.generate_dummy_path"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.generate_dummy_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.goal_pose_callback"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.goal_pose_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.path_planner.PathPlannerNode.run"><code class="docutils literal notranslate"><span class="pre">PathPlannerNode.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scripts.navigation_controller">Navigation Controller</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.navigation_controller.NavigationController"><code class="docutils literal notranslate"><span class="pre">NavigationController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.current_pose"><code class="docutils literal notranslate"><span class="pre">NavigationController.current_pose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.path"><code class="docutils literal notranslate"><span class="pre">NavigationController.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.obstacle_detected"><code class="docutils literal notranslate"><span class="pre">NavigationController.obstacle_detected</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.mission_completed"><code class="docutils literal notranslate"><span class="pre">NavigationController.mission_completed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.cmd_pub"><code class="docutils literal notranslate"><span class="pre">NavigationController.cmd_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.mission_report_pub"><code class="docutils literal notranslate"><span class="pre">NavigationController.mission_report_pub</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.calculate_distance"><code class="docutils literal notranslate"><span class="pre">NavigationController.calculate_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.check_mission_completion"><code class="docutils literal notranslate"><span class="pre">NavigationController.check_mission_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.lidar_callback"><code class="docutils literal notranslate"><span class="pre">NavigationController.lidar_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.move_along_path"><code class="docutils literal notranslate"><span class="pre">NavigationController.move_along_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.path_callback"><code class="docutils literal notranslate"><span class="pre">NavigationController.path_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.pose_callback"><code class="docutils literal notranslate"><span class="pre">NavigationController.pose_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.publish_mission_report"><code class="docutils literal notranslate"><span class="pre">NavigationController.publish_mission_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.navigation_controller.NavigationController.run"><code class="docutils literal notranslate"><span class="pre">NavigationController.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scripts.speaker_service">Speaker Service</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.speaker_service.speaker_callback"><code class="docutils literal notranslate"><span class="pre">speaker_callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.speaker_service.speaker_service"><code class="docutils literal notranslate"><span class="pre">speaker_service()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#triage-system">Triage System</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#diagram-overview">Diagram Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-scripts.triage_system">code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#triagesystem-node">TriageSystem Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.triage_system.TriageSystem"><code class="docutils literal notranslate"><span class="pre">TriageSystem</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#structural-risk-assessment">Structural Risk Assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Diagram Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sensor-interface">Sensor Interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perception-and-fusion">Perception and Fusion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#risk-evaluation">Risk Evaluation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mobility-and-re-inspection">Mobility and Re-Inspection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operator-interaction">Operator Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.structural_risk_assessment.StructuralRiskDummy"><code class="docutils literal notranslate"><span class="pre">StructuralRiskDummy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#victim-detection">Victim Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Diagram Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-1-detecting-victims">State 1: Detecting Victims</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-2-locating">State 2: Locating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-3-reporting">State 3: Reporting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.victim_detection.VictimDetector"><code class="docutils literal notranslate"><span class="pre">VictimDetector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-scripts.real_time_alerts">Real Time Alerts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.real_time_alerts.RealTimeReport"><code class="docutils literal notranslate"><span class="pre">RealTimeReport</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration_testing.html">Integration Testing KPIs and Results</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Post-Earthquake Search and Rescue Robot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Components</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/waleedelfieky/CogArch-SAR-TIAGo/blob/main/docs/source/components.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="components">
+<h1>Components<a class="headerlink" href="#components" title="Permalink to this heading"></a></h1>
+<section id="module-scripts.slam">
+<span id="slam"></span><h2>SLAM<a class="headerlink" href="#module-scripts.slam" title="Permalink to this heading"></a></h2>
+<p>This node handles sensor data integration and maintains a 3D map of the environment while tracking the robot’s pose.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.slam.</span></span><span class="sig-name descname"><span class="pre">SlamNode</span></span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main SLAM node class that handles sensor subscriptions and map/pose publishing.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.latest_pose">
+<span class="sig-name descname"><span class="pre">latest_pose</span></span><a class="headerlink" href="#scripts.slam.SlamNode.latest_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Stores the most recent robot pose estimate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PoseStamped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.map_pub">
+<span class="sig-name descname"><span class="pre">map_pub</span></span><a class="headerlink" href="#scripts.slam.SlamNode.map_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for 3D map data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.pose_pub">
+<span class="sig-name descname"><span class="pre">pose_pub</span></span><a class="headerlink" href="#scripts.slam.SlamNode.pose_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for current robot pose</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.depth_callback">
+<span class="sig-name descname"><span class="pre">depth_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.depth_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.depth_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Depth image callback function that processes 3D depth information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.Image</em>) – Incoming Image message from depth camera</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.lidar_callback">
+<span class="sig-name descname"><span class="pre">lidar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.lidar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.lidar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>LiDAR callback function that processes 2D laser scan data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.LaserScan</em>) – Incoming LaserScan message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Odometry callback function that updates the robot’s pose estimation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs.msg.Odometry</em>) – Incoming Odometry message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.publish_outputs">
+<span class="sig-name descname"><span class="pre">publish_outputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.publish_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.publish_outputs" title="Permalink to this definition"></a></dt>
+<dd><p>Publishes SLAM outputs including 3D map and current pose estimate.
+Creates dummy map data for demonstration purposes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.run" title="Permalink to this definition"></a></dt>
+<dd><p>Main node loop running at 10Hz. Continuously publishes SLAM outputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.slam.SlamNode.sonar_callback">
+<span class="sig-name descname"><span class="pre">sonar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/slam.html#SlamNode.sonar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.slam.SlamNode.sonar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Sonar callback function that processes range data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.Range</em>) – Incoming Range message from sonar</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scripts.path_planner">
+<span id="path-planner"></span><h2>Path Planner<a class="headerlink" href="#module-scripts.path_planner" title="Permalink to this heading"></a></h2>
+<p>This node creates simple straight-line paths between the robot’s current position and requested goals.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.path_planner.</span></span><span class="sig-name descname"><span class="pre">PathPlannerNode</span></span><a class="reference internal" href="_modules/scripts/path_planner.html#PathPlannerNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.path_planner.PathPlannerNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Path planning node that generates navigation paths between current position and goals.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.current_pose">
+<span class="sig-name descname"><span class="pre">current_pose</span></span><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.current_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Stores latest known robot position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PoseStamped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.goal_pose">
+<span class="sig-name descname"><span class="pre">goal_pose</span></span><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.goal_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Stores target destination coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PoseStamped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.path_pub">
+<span class="sig-name descname"><span class="pre">path_pub</span></span><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.path_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for generated navigation paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.current_pose_callback">
+<span class="sig-name descname"><span class="pre">current_pose_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/path_planner.html#PathPlannerNode.current_pose_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.current_pose_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Updates current robot position from SLAM system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>geometry_msgs.msg.PoseStamped</em>) – Current pose estimate from SLAM</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.generate_dummy_path">
+<span class="sig-name descname"><span class="pre">generate_dummy_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/path_planner.html#PathPlannerNode.generate_dummy_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.generate_dummy_path" title="Permalink to this definition"></a></dt>
+<dd><p>Creates simple straight-line path with interpolated poses.
+Uses linear interpolation between start and goal positions.
+Generates fixed forward-facing orientations using tf quaternions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.goal_pose_callback">
+<span class="sig-name descname"><span class="pre">goal_pose_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/path_planner.html#PathPlannerNode.goal_pose_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.goal_pose_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Handles new navigation goals and triggers path generation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>geometry_msgs.msg.PoseStamped</em>) – Target pose from user or higher-level system</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.path_planner.PathPlannerNode.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/path_planner.html#PathPlannerNode.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.path_planner.PathPlannerNode.run" title="Permalink to this definition"></a></dt>
+<dd><p>Main node loop. Maintains ROS connection and processes callbacks.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scripts.navigation_controller">
+<span id="navigation-controller"></span><h2>Navigation Controller<a class="headerlink" href="#module-scripts.navigation_controller" title="Permalink to this heading"></a></h2>
+<p>This node handles path following, obstacle avoidance, and mission status reporting.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.navigation_controller.</span></span><span class="sig-name descname"><span class="pre">NavigationController</span></span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main navigation control class implementing path following and obstacle avoidance.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.current_pose">
+<span class="sig-name descname"><span class="pre">current_pose</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.current_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Stores current robot position from SLAM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PoseStamped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.path" title="Permalink to this definition"></a></dt>
+<dd><p>Current navigation path to follow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.obstacle_detected">
+<span class="sig-name descname"><span class="pre">obstacle_detected</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.obstacle_detected" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for obstacle presence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.mission_completed">
+<span class="sig-name descname"><span class="pre">mission_completed</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.mission_completed" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for mission completion status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.cmd_pub">
+<span class="sig-name descname"><span class="pre">cmd_pub</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.cmd_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Velocity command publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.mission_report_pub">
+<span class="sig-name descname"><span class="pre">mission_report_pub</span></span><a class="headerlink" href="#scripts.navigation_controller.NavigationController.mission_report_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Mission status publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.calculate_distance">
+<span class="sig-name descname"><span class="pre">calculate_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pose1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.calculate_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.calculate_distance" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates Euclidean distance between two poses in 3D space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pose1</strong> (<em>geometry_msgs.msg.Pose</em>) – First position to compare</p></li>
+<li><p><strong>pose2</strong> (<em>geometry_msgs.msg.Pose</em>) – Second position to compare</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Straight-line distance between poses</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.check_mission_completion">
+<span class="sig-name descname"><span class="pre">check_mission_completion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.check_mission_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.check_mission_completion" title="Permalink to this definition"></a></dt>
+<dd><p>Checks mission completion status based on distance to final path point.
+Publishes mission report when completion criteria are met.
+Uses simplified distance threshold for demonstration purposes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.lidar_callback">
+<span class="sig-name descname"><span class="pre">lidar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.lidar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.lidar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Processes lidar data for obstacle detection.
+Implements simple threshold-based obstacle detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.LaserScan</em>) – Incoming laser scan data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.move_along_path">
+<span class="sig-name descname"><span class="pre">move_along_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.move_along_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.move_along_path" title="Permalink to this definition"></a></dt>
+<dd><p>Generates velocity commands for path following.
+Implements simple constant-speed movement when path is available and no obstacles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.path_callback">
+<span class="sig-name descname"><span class="pre">path_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.path_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.path_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Handles new navigation paths and resets mission status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs.msg.Path</em>) – Incoming path message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.pose_callback">
+<span class="sig-name descname"><span class="pre">pose_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.pose_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.pose_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Updates current robot pose from SLAM system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>geometry_msgs.msg.PoseStamped</em>) – Incoming pose message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.publish_mission_report">
+<span class="sig-name descname"><span class="pre">publish_mission_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.publish_mission_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.publish_mission_report" title="Permalink to this definition"></a></dt>
+<dd><p>Publishes mission completion status to ROS network.
+Implements simple success reporting for demonstration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.navigation_controller.NavigationController.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/navigation_controller.html#NavigationController.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.navigation_controller.NavigationController.run" title="Permalink to this definition"></a></dt>
+<dd><p>Main control loop running at 10Hz.
+Coordinates movement and mission status checks.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scripts.speaker_service">
+<span id="speaker-service"></span><h2>Speaker Service<a class="headerlink" href="#module-scripts.speaker_service" title="Permalink to this heading"></a></h2>
+<p>Speaker Service Node.</p>
+<p>This script defines a ROS service node that simulates a speaker’s behavior.</p>
+<p>It listens for service requests containing a message and randomly decides if the speaker successfully reproduces the message.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.speaker_service.speaker_callback">
+<span class="sig-prename descclassname"><span class="pre">scripts.speaker_service.</span></span><span class="sig-name descname"><span class="pre">speaker_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/speaker_service.html#speaker_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.speaker_service.speaker_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback function for the speaker service.</p>
+<p>This function is triggered when a service request is received.
+It logs the received message, randomly determines whether the speaker
+successfully reproduces the message, simulates a processing delay,
+and returns the success status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>req</strong> (<em>tiago_sar_cogarch.srv.SpeakerRequest</em>) – The service request containing the message to be reproduced.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response indicating whether the speaker successfully reproduced the message.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tiago_sar_cogarch.srv.SpeakerResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.speaker_service.speaker_service">
+<span class="sig-prename descclassname"><span class="pre">scripts.speaker_service.</span></span><span class="sig-name descname"><span class="pre">speaker_service</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/speaker_service.html#speaker_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.speaker_service.speaker_service" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes and runs the speaker service node.</p>
+<p>This function initializes the ROS node, advertises the ‘/speaker’ service,
+and keeps the node running to handle incoming service requests.</p>
+</dd></dl>
+
+</section>
+<section id="triage-system">
+<h2>Triage System<a class="headerlink" href="#triage-system" title="Permalink to this heading"></a></h2>
+<a class="reference internal image-reference" href="_images/triage_behavior_diagram.png"><img alt="_images/triage_behavior_diagram.png" src="_images/triage_behavior_diagram.png" style="width: 500px;" /></a>
+<section id="diagram-overview">
+<h3>Diagram Overview<a class="headerlink" href="#diagram-overview" title="Permalink to this heading"></a></h3>
+<p><strong>1. Description of the Sequence Diagram (Triage System)</strong></p>
+<p>This sequence diagram illustrates the interactions between different
+entities involved when the robot performs a triage assessment on a
+detected victim.</p>
+<ul class="simple">
+<li><p><strong>Participants:</strong> The key participants (represented by vertical
+lifelines) are the Operator (human supervisor), the main Triage
+System logic unit, the RGB-D Camera, Speech Recognition module,
+Microphones, and Speakers.</p></li>
+<li><p><strong>Initial Assessment:</strong> The process begins (presumably after a
+victim is detected, indicated by the alt [Victim Detected]
+fragment) with the Triage System acquiring visual data from the
+RGB-D Camera and audio data from the Microphones. This data is
+initially processed to assess consciousness and potential injuries.</p></li>
+<li><p><strong>Responsiveness Check:</strong></p>
+<ul>
+<li><p>The Triage System then initiates an interaction to check
+responsiveness. It instructs the Speakers to play an instruction
+(“Can you hear me?”). This is shown within a Loop(4) fragment,
+suggesting the system might try this interaction up to four
+times if necessary.</p></li>
+<li><p>The Microphones capture any response, sending the audio data to
+the Triage System.</p></li>
+<li><p>This audio data is forwarded to the Speech Recognition module to
+determine if a human response was received.</p></li>
+<li><p>The Triage System processes the result from Speech Recognition.</p></li>
+</ul>
+</li>
+<li><p><strong>Conditional Action (Responsiveness):</strong> An alt (alternative)
+fragment shows two paths based on the responsiveness check:</p>
+<ul>
+<li><p>If the victim is responsive ([Victim Responsiveness]), the
+Triage System uses the Speakers to give a set of instructions.</p></li>
+<li><p>Otherwise ([Else]), the Triage System alerts the Operator
+about the unresponsive victim.</p></li>
+</ul>
+</li>
+<li><p><strong>Reporting:</strong> After the responsiveness check (and potential
+instruction), the Triage System sends a Triage Report (categorized
+as Urgent/Stable) to the Operator.</p></li>
+<li><p><strong>Optional Detailed Assessment:</strong> An opt (optional) fragment at the
+end shows that the Operator can request a Detailed Assessment. If
+requested, the Triage System acquires close-up visual data using the
+RGB-D Camera and sends a Detailed Report back to the Operator.</p></li>
+</ul>
+<p><strong>In essence, the diagram details the step-by-step message exchange and
+processing flow required for the robot to assess a victim’s condition,
+interact with them, and report the findings.</strong></p>
+<p><strong>2. Why a Sequence Diagram is an Appropriate Behavioral Diagram for the
+Triage System</strong></p>
+<p>A sequence diagram is an excellent choice for representing the behavior
+of the <strong>Triage System</strong> component for the following reasons:</p>
+<ul class="simple">
+<li><p><strong>Focus on Interactions and Order:</strong> The core function of the Triage
+System involves a specific sequence of interactions between multiple
+components (the system logic, sensors like the camera and
+microphone, actuators like the speaker, external systems like speech
+recognition, and the human operator). Sequence diagrams excel at
+visualizing this <em>time-ordered sequence of messages</em> passed between
+different objects or components. This clearly shows <em>who</em> does
+<em>what</em> and <em>when</em>.</p></li>
+<li><p><strong>Clarity of Collaboration:</strong> The Triage System doesn’t operate in
+isolation. It collaborates with the camera, microphone, speaker,
+speech recognition, and the operator. A sequence diagram clearly
+depicts these collaborations and dependencies, showing how the
+components work together to achieve the triage goal.</p></li>
+<li><p><strong>Represents Use Case Scenarios:</strong> This diagram effectively models a
+specific scenario or use case: “perform triage on a detected
+victim.” It shows the flow of events for this behavior, making it
+easy to understand the intended interaction pattern.</p></li>
+<li><p><strong>Highlights Control Flow:</strong> The use of fragments like alt
+(alternatives), opt (optionals), and loop allows the diagram to
+represent conditional logic and repetition within the interaction
+sequence, which are crucial aspects of the triage process (e.g.,
+checking responsiveness, optionally getting more detail).</p></li>
+<li><p><strong>Alignment with Component Type:</strong> The Triage System is inherently
+an <em>interactive</em> and <em>process-driven</em> component. Its behavior is
+defined by the sequence of steps it takes and the messages it
+exchanges. A behavioral diagram that emphasizes this interaction
+sequence, like the sequence diagram, is therefore highly consistent
+with the nature of this component.</p></li>
+</ul>
+<p>Key Performance Indicators (KPIs) for the Triage System:</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">KPIs for Triage System</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>KPI</p></th>
+<th class="head"><p>Metric</p></th>
+<th class="head"><p>Success Criteria</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><ol class="arabic simple">
+<li><p>Consciousness Detection Accuracy</p></li>
+</ol>
+</td>
+<td><p>Correctly classify conscious vs unconscious victims via visual cues</p></td>
+<td><p>≥85% detection accuracy</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="2">
+<li><p>Responsiveness Classification</p></li>
+</ol>
+</td>
+<td><p>Response detection to robot speech</p></td>
+<td><p>≥90% true positive rate for responsive victims</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="3">
+<li><p>Injury Severity Estimation</p></li>
+</ol>
+</td>
+<td><p>Correct categorization of injury levels (e.g., bleeding/ suspected fracture) using color, motion, posture</p></td>
+<td><p>≥80% accuracy on test cases</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="4">
+<li><p>Triage Message Accuracy</p></li>
+</ol>
+</td>
+<td><p>Correct formatting and content of published triage info</p></td>
+<td><p>Matches expected content and topic</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="5">
+<li><p>ROS Triage Communication Reliability</p></li>
+</ol>
+</td>
+<td><p>% of successful messages on /triage_report</p></td>
+<td><p>100% success rate on real detections</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="6">
+<li><p>Latency of Evaluation + Reporting</p></li>
+</ol>
+</td>
+<td><p>Time from first input signal (image/audio) to triage report</p></td>
+<td><p>≤1.5 seconds</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-scripts.triage_system">
+<span id="code"></span><h3>code<a class="headerlink" href="#module-scripts.triage_system" title="Permalink to this heading"></a></h3>
+<section id="triagesystem-node">
+<h4>TriageSystem Node<a class="headerlink" href="#triagesystem-node" title="Permalink to this heading"></a></h4>
+<p>A ROS-based triage system that evaluates victim status in disaster response scenarios.</p>
+<p>Subscribes to:
+- /victim_location (nav_msgs/Odometry): Location of detected victims
+- /xtion/rgb/image_raw (sensor_msgs/Image): RGB camera feed for visual analysis
+- /audio (audio_common_msgs/AudioData): Audio stream for responsiveness checks</p>
+<p>Publishes:
+- /triage_status (tiago_sar_cogarch/TriageReport): Comprehensive triage assessment</p>
+<p>Services:
+- Uses /speaker (tiago_sar_cogarch/Speaker): Text-to-speech service for victim interaction</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.triage_system.</span></span><span class="sig-name descname"><span class="pre">TriageSystem</span></span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main class implementing triage assessment logic.</p>
+<p>The system evaluates victims through three primary modalities:
+1. Visual consciousness detection (movement analysis)
+2. Audio responsiveness verification
+3. Injury detection through computer vision</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.bridge">
+<span class="sig-name descname"><span class="pre">bridge</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.bridge" title="Permalink to this definition"></a></dt>
+<dd><p>ROS-OpenCV image converter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CvBridge</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.triage_pub">
+<span class="sig-name descname"><span class="pre">triage_pub</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.triage_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Triage report publisher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.speaker_srv">
+<span class="sig-name descname"><span class="pre">speaker_srv</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.speaker_srv" title="Permalink to this definition"></a></dt>
+<dd><p>Text-to-speech service client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.ServiceProxy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.current_victim">
+<span class="sig-name descname"><span class="pre">current_victim</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.current_victim" title="Permalink to this definition"></a></dt>
+<dd><p>Current victim location</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>geometry_msgs.Pose</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.last_question_time">
+<span class="sig-name descname"><span class="pre">last_question_time</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.last_question_time" title="Permalink to this definition"></a></dt>
+<dd><p>Timestamp of last audio prompt</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.response_timeout">
+<span class="sig-name descname"><span class="pre">response_timeout</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.response_timeout" title="Permalink to this definition"></a></dt>
+<dd><p>Time window for victim response (seconds)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.prev_img">
+<span class="sig-name descname"><span class="pre">prev_img</span></span><a class="headerlink" href="#scripts.triage_system.TriageSystem.prev_img" title="Permalink to this definition"></a></dt>
+<dd><p>Previous image frame for motion detection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.audio_callback">
+<span class="sig-name descname"><span class="pre">audio_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.audio_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.audio_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Process audio data for victim response detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>audio_common_msgs/AudioData</em>) – Raw audio samples</p>
+</dd>
+</dl>
+<p>Triggers responsiveness assessment if within response timeout window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.detect_injuries">
+<span class="sig-name descname"><span class="pre">detect_injuries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.detect_injuries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.detect_injuries" title="Permalink to this definition"></a></dt>
+<dd><p>Detect potential injuries through visual analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>numpy.ndarray</em>) – Input image in BGR format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detected injury descriptors (bleeding, suspected_fracture)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p>Algorithm:
+1. Bleeding detection: Large red regions in HSV color space
+2. Fracture suspicion: High edge complexity through Canny/contour analysis</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.detect_movement">
+<span class="sig-name descname"><span class="pre">detect_movement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.detect_movement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.detect_movement" title="Permalink to this definition"></a></dt>
+<dd><p>Detect inter-frame motion using absolute difference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>numpy.ndarray</em>) – Current frame in BGR format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if mean frame difference exceeds threshold (10)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.detect_voice">
+<span class="sig-name descname"><span class="pre">detect_voice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.detect_voice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.detect_voice" title="Permalink to this definition"></a></dt>
+<dd><p>Basic voice activity detection using RMS energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – Audio samples as 16-bit integers</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – RMS threshold for voice detection</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if audio energy exceeds threshold</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.publish_report">
+<span class="sig-name descname"><span class="pre">publish_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conscious</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.publish_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.publish_report" title="Permalink to this definition"></a></dt>
+<dd><p>Publish triage assessment report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conscious</strong> (<em>bool</em>) – Consciousness status from movement detection</p></li>
+<li><p><strong>responsive</strong> (<em>bool</em>) – Responsiveness status from audio interaction</p></li>
+<li><p><strong>injuries</strong> (<em>list</em>) – Detected injury descriptors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.rgb_callback">
+<span class="sig-name descname"><span class="pre">rgb_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.rgb_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.rgb_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Process RGB images for visual assessment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs/Image</em>) – Incoming RGB image</p>
+</dd>
+</dl>
+<p>Performs:
+- Movement detection for consciousness assessment
+- Injury detection through computer vision
+- Audio prompt triggering for unresponsive victims</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.triage_system.TriageSystem.victim_callback">
+<span class="sig-name descname"><span class="pre">victim_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/triage_system.html#TriageSystem.victim_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.triage_system.TriageSystem.victim_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Handle new victim location updates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs/Odometry</em>) – Victim position message</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="structural-risk-assessment">
+<h2>Structural Risk Assessment<a class="headerlink" href="#structural-risk-assessment" title="Permalink to this heading"></a></h2>
+<a class="reference internal image-reference" href="_images/risk_assessment_diagram.png"><img alt="_images/risk_assessment_diagram.png" src="_images/risk_assessment_diagram.png" style="width: 1500px;" /></a>
+<p>This document describes the detailed flow of the <strong>Structural Risk Assessment</strong> system, represented by the activity diagram.
+The diagram is organized into five main sections: <strong>Sensor Interface</strong>, <strong>Perception and Fusion</strong>, <strong>Risk Evaluation</strong>, <strong>Mobility and Re-Inspection</strong>, and <strong>Operator Interaction</strong>.</p>
+<p>Each section is responsible for a set of operations crucial to detecting, evaluating, and responding to structural risks.</p>
+<section id="id1">
+<h3>Diagram Overview<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<section id="sensor-interface">
+<h4>Sensor Interface<a class="headerlink" href="#sensor-interface" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>This section initiates every <strong>100 ms</strong> and manages the acquisition of sensor data.</p></li>
+<li><p>The system collects inputs from multiple sources:</p>
+<ul>
+<li><p>Sonar (producing Range data)</p></li>
+<li><p>Lidar (producing 3D Point Cloud data)</p></li>
+<li><p>RGB Camera (producing RGB Images)</p></li>
+<li><p>Depth Camera (producing Depth Images)</p></li>
+</ul>
+</li>
+<li><p>After acquisition, the system validates the RGB image using a decision point:</p>
+<ul>
+<li><p>If the RGB Image is invalid, an error is sent via <cite>SendError_Camera</cite>.</p></li>
+<li><p>If valid, the image is processed.</p></li>
+</ul>
+</li>
+<li><p>Simultaneously, the system checks if other sensor readings are valid:</p>
+<ul>
+<li><p>If invalid, an error is sent via <cite>SendError_Sensor</cite>.</p></li>
+<li><p>If valid, the sensor data is processed.</p></li>
+</ul>
+</li>
+<li><p>Once processing is complete, the system proceeds to the next section.</p></li>
+</ul>
+</section>
+<section id="perception-and-fusion">
+<h4>Perception and Fusion<a class="headerlink" href="#perception-and-fusion" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>In this phase, sensor data (images, Lidar, Sonar, depth camera, and force sensor) are fused together.</p></li>
+<li><p>The system then classifies structural defects based on the fused data.</p></li>
+<li><p>A decision is made:</p>
+<ul>
+<li><p>If classification fails (<cite>isClassifyFail</cite>), the process terminates.</p></li>
+<li><p>If classification succeeds, the system advances to risk evaluation.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="risk-evaluation">
+<h4>Risk Evaluation<a class="headerlink" href="#risk-evaluation" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>The system evaluates the <strong>risk level</strong> associated with the classified structural defect.</p></li>
+<li><p>Risk level and accuracy are acquired and stored in <cite>RISK_DS</cite>.</p></li>
+<li><p>Based on the evaluated risk, the system categorizes the defect into one of three levels:</p>
+<ul>
+<li><p><strong>High Risk</strong></p></li>
+<li><p><strong>Medium Risk</strong></p></li>
+<li><p><strong>Low Risk</strong></p></li>
+</ul>
+</li>
+<li><p>Each decision path ensures proper logging or alerts as necessary, followed by a transition to mobility operations.</p></li>
+</ul>
+</section>
+<section id="mobility-and-re-inspection">
+<h4>Mobility and Re-Inspection<a class="headerlink" href="#mobility-and-re-inspection" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>This section evaluates the <strong>accuracy</strong> of the risk evaluation.</p></li>
+<li><p>A decision point checks whether the current accuracy is sufficient:</p>
+<ul>
+<li><p>If sufficient, an alert is sent to the operator.</p></li>
+<li><p>If insufficient, the system extracts a <strong>2D Position</strong> from the 3D pose.</p></li>
+</ul>
+</li>
+<li><p>It then assesses the reachability of the target:</p>
+<ul>
+<li><p>If unreachable, an alert is sent to inform the operator.</p></li>
+<li><p>If reachable, the system commands a <strong>MoveCloser(2D Position)</strong> action for better data collection and re-inspection.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="operator-interaction">
+<h4>Operator Interaction<a class="headerlink" href="#operator-interaction" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>This section handles communication between the system and the human operator.</p></li>
+<li><p>Upon sending an alert, the system waits for operator acknowledgment:</p>
+<ul>
+<li><p>If the alert is received and acknowledged, the system logs the acknowledgment.</p></li>
+<li><p>If not acknowledged, the system records it as “Not Acknowledged” and ends the current interaction flow.</p></li>
+</ul>
+</li>
+</ul>
+<p>Key Performance Indicators (KPIs):</p>
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">KPIs for Structural Risk Assessment</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>KPI</p></th>
+<th class="head"><p>Metric</p></th>
+<th class="head"><p>Success Criteria</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><ol class="arabic simple">
+<li><p>Crack Detection</p></li>
+</ol>
+</td>
+<td><p>Number of cracks detected from RGB images</p></td>
+<td><p>Randomized dummy value [0–4]; verified image input</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="2">
+<li><p>Wall Anomaly Detection</p></li>
+</ol>
+</td>
+<td><p>Number of wall anomalies detected from LiDAR scans</p></td>
+<td><p>Randomized dummy value [0–2]; valid LiDAR readings</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="3">
+<li><p>Hollow Space Detection</p></li>
+</ol>
+</td>
+<td><p>Number of hollow spaces detected from sonar sensor</p></td>
+<td><p>Randomized dummy value [0–2]; valid sonar readings</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="4">
+<li><p>Force Magnitude Assessment</p></li>
+</ol>
+</td>
+<td><p>Computed magnitude of force from wrist force-torque sensor</p></td>
+<td><p>Correct magnitude calculation; force &gt;8N raises risk</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="5">
+<li><p>Risk Score Evaluation</p></li>
+</ol>
+</td>
+<td><p>Aggregated weighted risk score based on sensor readings</p></td>
+<td><p>Risk status correctly classified (LOW, MEDIUM, HIGH)</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="6">
+<li><p>Risk Report Publication</p></li>
+</ol>
+</td>
+<td><p>Publishing RiskReport message on /risk_alert</p></td>
+<td><p>Timely publication after evaluation</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="7">
+<li><p>Manual Reassessment Handling</p></li>
+</ol>
+</td>
+<td><p>Responding to manual “reassess” requests</p></td>
+<td><p>Proper trigger of reassessment procedure</p></td>
+</tr>
+<tr class="row-odd"><td><ol class="arabic simple" start="8">
+<li><p>Reassessment Movement</p></li>
+</ol>
+</td>
+<td><p>Moving robot 1m forward for closer inspection</p></td>
+<td><p>Goal message sent on /move_base_simple/goal</p></td>
+</tr>
+<tr class="row-even"><td><ol class="arabic simple" start="9">
+<li><p>Reassessment Status Notification</p></li>
+</ol>
+</td>
+<td><p>Publishing status updates on reassessment progress</p></td>
+<td><p>Correct updates on /reassessment_status topic</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="id2">
+<h3>Code<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>The full workflow enables:</p>
+<ul class="simple">
+<li><p>Continuous data acquisition from multiple sensors.</p></li>
+<li><p>Fusion of sensory information for accurate structural defect detection.</p></li>
+<li><p>Risk evaluation with different severity levels.</p></li>
+<li><p>Dynamic mobility actions to enhance inspection quality.</p></li>
+<li><p>Real-time interaction with human operators to ensure timely decision-making.</p></li>
+</ul>
+<p>This systematic, cyclic approach ensures robustness, reliability, and safety in structural risk assessment scenarios.</p>
+<span class="target" id="module-scripts.structural_risk_assessment"></span><p>Structural Risk Dummy Node.</p>
+<p>This script defines a dummy structural risk assessment node in ROS that simulates
+the detection of cracks, wall anomalies, hollow spaces, and force magnitudes.
+It publishes risk alerts based on synthetic data and responds to manual reassessment requests.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.structural_risk_assessment.</span></span><span class="sig-name descname"><span class="pre">StructuralRiskDummy</span></span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A dummy class for simulating structural risk assessment.</p>
+<p>This class subscribes to various sensor topics, generates dummy detections,
+evaluates a risk score based on these detections, and publishes a risk report.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.crack_count">
+<span class="sig-name descname"><span class="pre">crack_count</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.crack_count" title="Permalink to this definition"></a></dt>
+<dd><p>Dummy crack count detected from RGB images.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.current_pose">
+<span class="sig-name descname"><span class="pre">current_pose</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.current_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Current robot pose from odometry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk">
+<span class="sig-name descname"><span class="pre">evaluate_risk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.evaluate_risk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.evaluate_risk" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the current structural risk based on dummy detection values.</p>
+<p>Computes a risk score and categorizes it into LOW, MEDIUM, or HIGH risk.
+Publishes a RiskReport message with detailed detection data and the computed risk status.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.force_magnitude">
+<span class="sig-name descname"><span class="pre">force_magnitude</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.force_magnitude" title="Permalink to this definition"></a></dt>
+<dd><p>Magnitude of force detected from wrist sensor.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.hollow_spaces">
+<span class="sig-name descname"><span class="pre">hollow_spaces</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.hollow_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Dummy hollow spaces detected from sonar readings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback">
+<span class="sig-name descname"><span class="pre">lidar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.lidar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.lidar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for LiDAR scan topic.</p>
+<p>Simulates the detection of wall anomalies by randomly generating a number between 0 and 2.
+Logs the number of detected anomalies and triggers risk evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.LaserScan</em>) – Incoming LiDAR scan message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.manual_request_callback">
+<span class="sig-name descname"><span class="pre">manual_request_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.manual_request_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.manual_request_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for manual reassessment requests.</p>
+<p>Processes the manual command received (e.g., “reassess” command to trigger reassessment).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>std_msgs.msg.String</em>) – Incoming manual request message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.move_pub">
+<span class="sig-name descname"><span class="pre">move_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.move_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for sending movement goals to navigate closer for reassessment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for odometry topic.</p>
+<p>Stores the current pose of the robot for future navigation tasks (e.g., moving closer to inspect).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs.msg.Odometry</em>) – Incoming odometry message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub">
+<span class="sig-name descname"><span class="pre">reassessment_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.reassessment_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for notifying about reassessment status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback">
+<span class="sig-name descname"><span class="pre">rgb_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.rgb_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.rgb_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for RGB image topic.</p>
+<p>Simulates the detection of cracks by randomly generating a number between 0 and 4.
+Logs the number of detected cracks and triggers risk evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.Image</em>) – Incoming RGB image message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.risk_pub">
+<span class="sig-name descname"><span class="pre">risk_pub</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.risk_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for broadcasting risk alerts using a custom RiskReport message.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback">
+<span class="sig-name descname"><span class="pre">sonar_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.sonar_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.sonar_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for sonar range topic.</p>
+<p>Simulates the detection of hollow spaces by randomly generating a number between 0 and 2.
+Logs the number of detected hollow spaces and triggers risk evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>sensor_msgs.msg.Range</em>) – Incoming sonar range message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment">
+<span class="sig-name descname"><span class="pre">trigger_reassessment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.trigger_reassessment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.trigger_reassessment" title="Permalink to this definition"></a></dt>
+<dd><p>Triggers a dummy reassessment movement.</p>
+<p>If the current pose is known, sends a goal 1 meter forward from the current position
+and notifies that the robot is moving for reassessment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.wall_anomalies">
+<span class="sig-name descname"><span class="pre">wall_anomalies</span></span><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.wall_anomalies" title="Permalink to this definition"></a></dt>
+<dd><p>Dummy wall anomalies detected from LiDAR scans.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.structural_risk_assessment.StructuralRiskDummy.wrench_callback">
+<span class="sig-name descname"><span class="pre">wrench_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/structural_risk_assessment.html#StructuralRiskDummy.wrench_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.structural_risk_assessment.StructuralRiskDummy.wrench_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for force/torque sensor topic.</p>
+<p>Calculates the magnitude of the force vector from the wrench message.
+Logs the detected force and triggers risk evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>geometry_msgs.msg.WrenchStamped</em>) – Incoming wrench message containing force data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="victim-detection">
+<h2>Victim Detection<a class="headerlink" href="#victim-detection" title="Permalink to this heading"></a></h2>
+<a class="reference internal image-reference" href="_images/victim_detection_logic.png"><img alt="_images/victim_detection_logic.png" src="_images/victim_detection_logic.png" style="width: 1500px;" /></a>
+<section id="id3">
+<h3>Diagram Overview<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p><strong>Behavioral Diagram Type:</strong> UML State Machine Diagram</p>
+<p>This is appropriate for modeling the state-based behavior of a system component that changes states based on events, conditions, or actions.
+The state machine diagram was chosen for modeling this component because the system’s behavior is fundamentally state-driven. In the victim detection task, the robot transitions between a series of well-defined operational modes ? such as Detecting Victims, Locating, and Reporting ? where each mode has specific activities, entry and exit actions, and conditions that trigger transitions to the next state.</p>
+<p><strong>Description of Components:</strong></p>
+<p>The state machine diagram contains two composite states with substates and one simple state. It begins with an initial pseudostate and ends with a terminate pseudostate.</p>
+<p><strong>Process Overview:</strong></p>
+<ol class="arabic simple">
+<li><p>Victim detection using audio and visual sensors</p></li>
+<li><p>Location estimation using depth and odometry data</p></li>
+<li><p>Reporting the detected victim’s location and detection alert</p></li>
+</ol>
+<p><strong>State Details:</strong></p>
+</section>
+<section id="state-1-detecting-victims">
+<h3>State 1: Detecting Victims<a class="headerlink" href="#state-1-detecting-victims" title="Permalink to this heading"></a></h3>
+<p><strong>Substates:</strong></p>
+<ul class="simple">
+<li><p>Parallel processes:
+- Acquire data from RGB-D camera → Process data
+- Acquire data from microphones → Process data</p></li>
+</ul>
+<p><strong>Transition to Next State:</strong> Occurs if a victim is detected or sound level exceeds 500. Transitions to the <em>Detected victim</em> state.</p>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">turn_on_camera</span></code> and <code class="docutils literal notranslate"><span class="pre">turn_on_microphone</span></code></p></li>
+<li><p><em>During state:</em> Perform <code class="docutils literal notranslate"><span class="pre">acquire_sensor_data</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">turn_off_camera</span></code> and <code class="docutils literal notranslate"><span class="pre">turn_off_microphone</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">time_out()</span></code> event occurs: Trigger <code class="docutils literal notranslate"><span class="pre">error_handling()</span></code> function</p></li>
+</ul>
+</section>
+<section id="state-2-locating">
+<h3>State 2: Locating<a class="headerlink" href="#state-2-locating" title="Permalink to this heading"></a></h3>
+<p><strong>Substates:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Data Collection:</strong>
+- Acquire depth data
+- Acquire odometry data</p></li>
+<li><p><strong>Location Estimation:</strong>
+- Calculate location
+- Verify data
+- Send data</p></li>
+</ol>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">acquiring_sensor_data</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">end_communication</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">calculation_failed()</span></code> occurs: Perform <code class="docutils literal notranslate"><span class="pre">calculate_again</span></code></p></li>
+</ul>
+</section>
+<section id="state-3-reporting">
+<h3>State 3: Reporting<a class="headerlink" href="#state-3-reporting" title="Permalink to this heading"></a></h3>
+<p><strong>Activities:</strong></p>
+<ul class="simple">
+<li><p><em>On entry:</em> Execute <code class="docutils literal notranslate"><span class="pre">calculate_location</span></code></p></li>
+<li><p><em>During state:</em> Perform <code class="docutils literal notranslate"><span class="pre">report_location</span></code> and <code class="docutils literal notranslate"><span class="pre">report_alert</span></code></p></li>
+<li><p><em>On exit:</em> Call <code class="docutils literal notranslate"><span class="pre">verify_communication</span></code></p></li>
+</ul>
+<p><strong>Transitions:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">no_response()</span></code> event occurs: Execute <code class="docutils literal notranslate"><span class="pre">send_again</span></code></p></li>
+</ul>
+<table class="docutils align-left" id="id7">
+<caption><span class="caption-text">Victim Detection Key Performance Indicators (KPIs)</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>KPIs</strong></p></th>
+<th class="head"><p><strong>Metric</strong></p></th>
+<th class="head"><p><strong>Success Criteria</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Victim Detection Accuracy (Visual)</p></td>
+<td><p>Precision/recall in detecting humans in RGB-D images</p></td>
+<td><p>≥90% accuracy in test set</p></td>
+</tr>
+<tr class="row-odd"><td><p>Victim Detection Accuracy (Audio)</p></td>
+<td><p>Correctly detect sounds</p></td>
+<td><p>≥85% true positive rate on labeled audio samples</p></td>
+</tr>
+<tr class="row-even"><td><p>False Positive Rate</p></td>
+<td><p>Percentage of false alerts (e.g., non-human objects)</p></td>
+<td><p>&lt;5% under standard conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Location Estimation Accuracy</p></td>
+<td><p>Deviation between reported and actual victim location</p></td>
+<td><p>≤0.5m deviation</p></td>
+</tr>
+<tr class="row-even"><td><p>Alert Latency</p></td>
+<td><p>Time between detection and message publication</p></td>
+<td><p>≤500ms from detection to message receipt</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>code<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<span class="target" id="module-scripts.victim_detection"></span><dl class="py class">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.victim_detection.</span></span><span class="sig-name descname"><span class="pre">VictimDetector</span></span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A ROS-based victim detection class using RGB images, depth data, audio, and odometry.</p>
+<dl class="simple">
+<dt>Subscribes to:</dt><dd><ul class="simple">
+<li><p>/xtion/rgb/image_raw: RGB camera feed.</p></li>
+<li><p>/xtion/depth/image_raw: Depth image feed.</p></li>
+<li><p>/mobile_base_controller/odom: Robot odometry.</p></li>
+<li><p>/audio: Audio data.</p></li>
+</ul>
+</dd>
+<dt>Publishes:</dt><dd><ul class="simple">
+<li><p>/victim_location: Estimated location of detected victim.</p></li>
+<li><p>/victim_alert: Alert message when a victim is detected.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.audio_callback">
+<span class="sig-name descname"><span class="pre">audio_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.audio_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.audio_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for audio messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>audio_msg</strong> (<em>audio_common_msgs.msg.AudioData</em>) – AudioData message containing sound samples.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.depth_callback">
+<span class="sig-name descname"><span class="pre">depth_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.depth_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.depth_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for depth image messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>depth_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Depth image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.detect_victim_audio">
+<span class="sig-name descname"><span class="pre">detect_victim_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.detect_victim_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.detect_victim_audio" title="Permalink to this definition"></a></dt>
+<dd><p>Detects a victim using audio data based on volume threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_msg</strong> (<em>audio_common_msgs.msg.AudioData</em>) – AudioData message.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – Volume threshold for detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if volume exceeds threshold, otherwise False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.detect_victim_rgb">
+<span class="sig-name descname"><span class="pre">detect_victim_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.detect_victim_rgb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.detect_victim_rgb" title="Permalink to this definition"></a></dt>
+<dd><p>Detects a victim using RGB image data by looking for red color blobs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rgb_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Image message with RGB data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if a victim is detected, otherwise False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odom_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for odometry messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>odom_msg</strong> (<em>nav_msgs.msg.Odometry</em>) – Odometry data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.report_victim">
+<span class="sig-name descname"><span class="pre">report_victim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.report_victim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.report_victim" title="Permalink to this definition"></a></dt>
+<dd><p>Publishes a victim alert and a dummy location.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.victim_detection.VictimDetector.rgb_callback">
+<span class="sig-name descname"><span class="pre">rgb_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/victim_detection.html#VictimDetector.rgb_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.victim_detection.VictimDetector.rgb_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback for RGB image messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rgb_msg</strong> (<em>sensor_msgs.msg.Image</em>) – Image message containing RGB data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scripts.real_time_alerts">
+<span id="real-time-alerts"></span><h3>Real Time Alerts<a class="headerlink" href="#module-scripts.real_time_alerts" title="Permalink to this heading"></a></h3>
+<p>This node provides a graphical interface for monitoring search and rescue mission status,
+including victim triage, robot location, risk alerts, and mission reports. It also enables
+manual control through ROS topics.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.real_time_alerts.</span></span><span class="sig-name descname"><span class="pre">RealTimeReport</span></span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main GUI application class for real-time mission monitoring and control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.manual_request_pub">
+<span class="sig-name descname"><span class="pre">manual_request_pub</span></span><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.manual_request_pub" title="Permalink to this definition"></a></dt>
+<dd><p>Publisher for manual intervention requests</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rospy.Publisher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.root">
+<span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.root" title="Permalink to this definition"></a></dt>
+<dd><p>Main GUI window instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tk.Tk</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.ros_thread">
+<span class="sig-name descname"><span class="pre">ros_thread</span></span><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.ros_thread" title="Permalink to this definition"></a></dt>
+<dd><p>Separate thread for ROS operations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>threading.Thread</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Various</span> <span class="pre">GUI</span> <span class="pre">widgets</span></span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>labels, buttons, text fields</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.log_message">
+<span class="sig-name descname"><span class="pre">log_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.log_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.log_message" title="Permalink to this definition"></a></dt>
+<dd><p>Manages log window updates with timestamped messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Message text to display in log</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.mission_report_callback">
+<span class="sig-name descname"><span class="pre">mission_report_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.mission_report_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.mission_report_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Handles mission completion notifications from /mission_report topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>std_msgs.msg.String</em>) – String message with mission status</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.on_close">
+<span class="sig-name descname"><span class="pre">on_close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.on_close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.on_close" title="Permalink to this definition"></a></dt>
+<dd><p>Handles clean shutdown procedures for both ROS and GUI.
+Ensures proper resource cleanup on window closure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.process_report">
+<span class="sig-name descname"><span class="pre">process_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.process_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.process_report" title="Permalink to this definition"></a></dt>
+<dd><p>Formats TriageReport message for GUI display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>report</strong> (<em>tiago_sar_cogarch.msg.TriageReport</em>) – Raw triage report data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted string for GUI display</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.refresh_data">
+<span class="sig-name descname"><span class="pre">refresh_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.refresh_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.refresh_data" title="Permalink to this definition"></a></dt>
+<dd><p>Handles manual data refresh request from GUI.
+Updates status bar and logs the action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.risk_alert_callback">
+<span class="sig-name descname"><span class="pre">risk_alert_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.risk_alert_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.risk_alert_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Processes structural risk alerts from /risk_alert topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>tiago_sar_cogarch.msg.RiskReport</em>) – RiskReport message with structural integrity data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.robot_location_callback">
+<span class="sig-name descname"><span class="pre">robot_location_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.robot_location_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.robot_location_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Updates robot position from /slam_3d/current_pose topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>geometry_msgs.msg.PoseStamped</em>) – PoseStamped message with current robot location</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.run_ros">
+<span class="sig-name descname"><span class="pre">run_ros</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.run_ros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.run_ros" title="Permalink to this definition"></a></dt>
+<dd><p>Maintains ROS node functionality in separate thread.
+Handles ROS message processing without blocking GUI.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.send_test_update">
+<span class="sig-name descname"><span class="pre">send_test_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.send_test_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.send_test_update" title="Permalink to this definition"></a></dt>
+<dd><p>Sends manual request from input field to ROS network.
+Validates input and publishes to /manual_request topic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.triage_callback">
+<span class="sig-name descname"><span class="pre">triage_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.triage_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.triage_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Processes incoming triage reports from /triage_status topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>tiago_sar_cogarch.msg.TriageReport</em>) – Triage report message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.update_gui">
+<span class="sig-name descname"><span class="pre">update_gui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.update_gui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.update_gui" title="Permalink to this definition"></a></dt>
+<dd><p>Updates specified GUI element with new information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – Which GUI label to update</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Content to display in the label</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.victim_alert_callback">
+<span class="sig-name descname"><span class="pre">victim_alert_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.victim_alert_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.victim_alert_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Handles victim alerts from /victim_alert topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>std_msgs.msg.String</em>) – Alert message containing victim information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.real_time_alerts.RealTimeReport.victim_location_callback">
+<span class="sig-name descname"><span class="pre">victim_location_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/real_time_alerts.html#RealTimeReport.victim_location_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.real_time_alerts.RealTimeReport.victim_location_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Processes victim location updates from /victim_location topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>nav_msgs.msg.Odometry</em>) – Odometry message with victim coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="communication.html" class="btn btn-neutral float-left" title="Robot Communication Flow Description" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="integration_testing.html" class="btn btn-neutral float-right" title="Integration Testing KPIs and Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, teamG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

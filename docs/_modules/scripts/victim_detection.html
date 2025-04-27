@@ -44,14 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../SLAM.html">SLAM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
 </ul>
 
@@ -92,7 +85,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
 
 
-<div class="viewcode-block" id="VictimDetector"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VictimDetector</span><span class="p">:</span>
+<div class="viewcode-block" id="VictimDetector"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VictimDetector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A ROS-based victim detection class using RGB images, depth data, audio, and odometry.</span>
 
@@ -124,7 +117,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_depth</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="VictimDetector.rgb_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.rgb_callback"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback for RGB image messages.</span>
 
@@ -137,7 +130,7 @@
         <span class="k">if</span> <span class="n">see_victim</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">report_victim</span><span class="p">()</span>  </div>
     
-<div class="viewcode-block" id="VictimDetector.audio_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.audio_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">audio_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.audio_callback"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.audio_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">audio_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback for audio messages.</span>
 
@@ -150,7 +143,7 @@
         <span class="k">if</span> <span class="n">hear_victim</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">report_victim</span><span class="p">()</span></div>
         
-<div class="viewcode-block" id="VictimDetector.odom_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odom_msg</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.odom_callback"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.odom_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">odom_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odom_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback for odometry messages.</span>
 
@@ -160,7 +153,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_odom</span> <span class="o">=</span> <span class="n">odom_msg</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Odometry received!&quot;</span><span class="p">)</span>    </div>
     
-<div class="viewcode-block" id="VictimDetector.depth_callback"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.depth_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">depth_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth_msg</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.depth_callback"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.depth_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">depth_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback for depth image messages.</span>
 
@@ -177,7 +170,7 @@
             <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert depth image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">latest_depth_image</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="VictimDetector.detect_victim_rgb"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.detect_victim_rgb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.detect_victim_rgb"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.detect_victim_rgb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detects a victim using RGB image data by looking for red color blobs.</span>
 
@@ -208,7 +201,7 @@
             <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>   </div>
     
-<div class="viewcode-block" id="VictimDetector.detect_victim_audio"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.detect_victim_audio">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.detect_victim_audio"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.detect_victim_audio">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_victim_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_msg</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detects a victim using audio data based on volume threshold.</span>
 
@@ -240,7 +233,7 @@
             <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Audio volume detection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="VictimDetector.report_victim"><a class="viewcode-back" href="../../victim_detection.html#scripts.victim_detection.VictimDetector.report_victim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">report_victim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="VictimDetector.report_victim"><a class="viewcode-back" href="../../components.html#scripts.victim_detection.VictimDetector.report_victim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">report_victim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Publishes a victim alert and a dummy location.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

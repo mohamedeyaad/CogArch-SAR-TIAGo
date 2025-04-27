@@ -44,14 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../SLAM.html">SLAM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
 </ul>
 
@@ -97,7 +90,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoseStamped</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="kn">import</span> <span class="n">font</span>  <span class="c1"># Import font module for custom fonts</span>
 
-<div class="viewcode-block" id="RealTimeReport"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RealTimeReport</span><span class="p">:</span>
+<div class="viewcode-block" id="RealTimeReport"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RealTimeReport</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main GUI application class for real-time mission monitoring and control.</span>
 <span class="sd">    </span>
@@ -194,7 +187,7 @@
         <span class="c1"># Tkinter loop running in the main thread</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
 
-<div class="viewcode-block" id="RealTimeReport.refresh_data"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.refresh_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.refresh_data"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.refresh_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles manual data refresh request from GUI.</span>
 <span class="sd">        Updates status bar and logs the action.</span>
@@ -203,7 +196,7 @@
         <span class="c1"># Add logic to refresh data if needed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Status: Data refreshed&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.send_test_update"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.send_test_update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.send_test_update"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.send_test_update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends manual request from input field to ROS network.</span>
 <span class="sd">        Validates input and publishes to /manual_request topic.</span>
@@ -216,7 +209,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;No input provided for manual request.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.log_message"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.log_message">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.log_message"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.log_message">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manages log window updates with timestamped messages.</span>
 <span class="sd">        </span>
@@ -228,14 +221,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_window</span><span class="o">.</span><span class="n">see</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">END</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.run_ros"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.run_ros">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run_ros</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.run_ros"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.run_ros">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run_ros</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Maintains ROS node functionality in separate thread.</span>
 <span class="sd">        Handles ROS message processing without blocking GUI.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.triage_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.triage_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">triage_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.triage_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.triage_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">triage_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes incoming triage reports from /triage_status topic.</span>
 <span class="sd">        </span>
@@ -246,7 +239,7 @@
         <span class="n">update_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_report</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Triage Report&quot;</span><span class="p">,</span> <span class="n">update_msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.process_report"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.process_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.process_report"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.process_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats TriageReport message for GUI display.</span>
 <span class="sd">        </span>
@@ -274,7 +267,7 @@
 
         <span class="k">return</span> <span class="n">update_str</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.victim_alert_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.victim_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.victim_alert_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.victim_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles victim alerts from /victim_alert topic.</span>
 <span class="sd">        </span>
@@ -284,7 +277,7 @@
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received victim alert: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Victim Alert&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.victim_location_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.victim_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.victim_location_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.victim_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes victim location updates from /victim_location topic.</span>
 <span class="sd">        </span>
@@ -298,7 +291,7 @@
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received victim location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Victim Location&quot;</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.robot_location_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.robot_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">robot_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.robot_location_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.robot_location_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">robot_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates robot position from /slam_3d/current_pose topic.</span>
 <span class="sd">        </span>
@@ -312,7 +305,7 @@
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Received robot location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Robot Location&quot;</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.risk_alert_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.risk_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">risk_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.risk_alert_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.risk_alert_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">risk_alert_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes structural risk alerts from /risk_alert topic.</span>
 <span class="sd">        </span>
@@ -334,7 +327,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Risk Alert&quot;</span><span class="p">,</span> <span class="n">alert_message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.mission_report_callback"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.mission_report_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mission_report_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.mission_report_callback"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.mission_report_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mission_report_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles mission completion notifications from /mission_report topic.</span>
 <span class="sd">        </span>
@@ -344,7 +337,7 @@
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[RealTimeReport] Mission success: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">(</span><span class="s2">&quot;Mission Report&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.update_gui"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.update_gui">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.update_gui"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.update_gui">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates specified GUI element with new information.</span>
 <span class="sd">        </span>
@@ -364,7 +357,7 @@
         <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;Risk Alert&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">risk_alert_label</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Risk Alert: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RealTimeReport.on_close"><a class="viewcode-back" href="../../real_time_alerts.html#scripts.real_time_alerts.RealTimeReport.on_close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RealTimeReport.on_close"><a class="viewcode-back" href="../../components.html#scripts.real_time_alerts.RealTimeReport.on_close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles clean shutdown procedures for both ROS and GUI.</span>
 <span class="sd">        Ensures proper resource cleanup on window closure.</span>

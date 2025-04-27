@@ -44,14 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../SLAM.html">SLAM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
 </ul>
 
@@ -108,7 +101,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Speaker</span><span class="p">,</span> <span class="n">SpeakerRequest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriageReport</span>
 
-<div class="viewcode-block" id="TriageSystem"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TriageSystem</span><span class="p">:</span>
+<div class="viewcode-block" id="TriageSystem"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TriageSystem</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class implementing triage assessment logic.</span>
 <span class="sd">    </span>
 <span class="sd">    The system evaluates victims through three primary modalities:</span>
@@ -147,7 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">response_timeout</span> <span class="o">=</span> <span class="mf">0.1</span>             <span class="c1"># Response window (seconds)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_img</span> <span class="o">=</span> <span class="kc">None</span>                    <span class="c1"># For optical flow detection</span>
 
-<div class="viewcode-block" id="TriageSystem.victim_callback"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.victim_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.victim_callback"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.victim_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">victim_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle new victim location updates.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -156,7 +149,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_victim</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span>
         <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TriageSystem] New victim located at: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_victim</span><span class="o">.</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TriageSystem.rgb_callback"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.rgb_callback"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.rgb_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rgb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process RGB images for visual assessment.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -189,7 +182,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TriageSystem] Error processing image: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TriageSystem.audio_callback"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.audio_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">audio_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.audio_callback"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.audio_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">audio_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process audio data for victim response detection.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -205,7 +198,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">publish_report</span><span class="p">(</span><span class="n">conscious</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">responsive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">injuries</span><span class="o">=</span><span class="n">injuries</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">last_question_time</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TriageSystem.detect_movement"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.detect_movement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_movement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.detect_movement"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.detect_movement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_movement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Detect inter-frame motion using absolute difference.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -222,7 +215,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_img</span> <span class="o">=</span> <span class="n">image</span>
         <span class="k">return</span> <span class="n">diff</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">10</span>  <span class="c1"># Arbitrary threshold</span></div>
 
-<div class="viewcode-block" id="TriageSystem.detect_voice"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.detect_voice">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_voice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.detect_voice"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.detect_voice">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_voice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic voice activity detection using RMS energy.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -235,7 +228,7 @@
         <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))))</span>
         <span class="k">return</span> <span class="n">rms</span> <span class="o">&gt;</span> <span class="n">threshold</span></div>
 
-<div class="viewcode-block" id="TriageSystem.detect_injuries"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.detect_injuries">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_injuries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.detect_injuries"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.detect_injuries">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_injuries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Detect potential injuries through visual analysis.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -267,7 +260,7 @@
 
         <span class="k">return</span> <span class="n">injuries</span></div>
 
-<div class="viewcode-block" id="TriageSystem.publish_report"><a class="viewcode-back" href="../../triage_system.html#scripts.triage_system.TriageSystem.publish_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conscious</span><span class="p">,</span> <span class="n">responsive</span><span class="p">,</span> <span class="n">injuries</span><span class="p">):</span>
+<div class="viewcode-block" id="TriageSystem.publish_report"><a class="viewcode-back" href="../../components.html#scripts.triage_system.TriageSystem.publish_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conscious</span><span class="p">,</span> <span class="n">responsive</span><span class="p">,</span> <span class="n">injuries</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish triage assessment report.</span>
 
 <span class="sd">        Args:</span>

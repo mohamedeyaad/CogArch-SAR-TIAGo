@@ -44,14 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Project Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../communication.html">Robot Communication Flow Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../SLAM.html">SLAM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../path_planner.html">Path Planner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../navigation_controller.html">Navigation Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../speaker_service.html">Speaker Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../triage_system.html">Triage System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../structural_risk_assessment.html">Structural Risk Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../victim_detection.html">Victim Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../real_time_alerts.html">Real Time Alerts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../components.html">Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../integration_testing.html">Integration Testing KPIs and Results</a></li>
 </ul>
 
@@ -84,8 +77,10 @@
 <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">Speaker Service Node.</span>
 
-<span class="sd">This script defines a ROS (Robot Operating System) service node that simulates a speaker&#39;s behavior.</span>
+<span class="sd">This script defines a ROS service node that simulates a speaker&#39;s behavior. </span>
+
 <span class="sd">It listens for service requests containing a message and randomly decides if the speaker successfully reproduces the message.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
@@ -93,7 +88,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">tiago_sar_cogarch.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Speaker</span><span class="p">,</span> <span class="n">SpeakerResponse</span>
 
-<div class="viewcode-block" id="speaker_callback"><a class="viewcode-back" href="../../speaker_service.html#scripts.speaker_service.speaker_callback">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_callback</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+<div class="viewcode-block" id="speaker_callback"><a class="viewcode-back" href="../../components.html#scripts.speaker_service.speaker_callback">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_callback</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Callback function for the speaker service.</span>
 
@@ -121,7 +116,7 @@
 
     <span class="k">return</span> <span class="n">SpeakerResponse</span><span class="p">(</span><span class="n">success</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="speaker_service"><a class="viewcode-back" href="../../speaker_service.html#scripts.speaker_service.speaker_service">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_service</span><span class="p">():</span>
+<div class="viewcode-block" id="speaker_service"><a class="viewcode-back" href="../../components.html#scripts.speaker_service.speaker_service">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">speaker_service</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes and runs the speaker service node.</span>
 

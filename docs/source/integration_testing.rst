@@ -5,7 +5,7 @@ The integration testing process aims to ensure that the system components intera
 
 ---
 
-1. Sensor Data Availability
+Sensor Data Availability
 ----------------------------
 
 - *KPI*: All sensors (LiDAR, SONAR, RGB-D Camera, Force Sensors, Microphones) must produce data within 20 seconds of initialization.
@@ -14,7 +14,7 @@ The integration testing process aims to ensure that the system components intera
 
 ---
 
-2. Navigation Pipeline Validation
+Navigation Pipeline Validation
 ----------------------------------
 
 - *KPI*: 
@@ -31,7 +31,7 @@ The integration testing process aims to ensure that the system components intera
 
 ---
 
-3. Victim Detection and Triage Assessment
+Victim Detection and Triage Assessment
 ------------------------------------------
 
 - *KPI*: 
@@ -44,7 +44,7 @@ The integration testing process aims to ensure that the system components intera
 
 ---
 
-4. Structural Risk Assessment
+Structural Risk Assessment
 ------------------------------
 
 - *KPI*: 
@@ -57,7 +57,7 @@ The integration testing process aims to ensure that the system components intera
 
 ---
 
-5. Real-Time Responsiveness
+Real-Time Responsiveness
 ----------------------------
 
 - *KPI*: The system must respond to real-time conditions and produce outputs within specified time limits.

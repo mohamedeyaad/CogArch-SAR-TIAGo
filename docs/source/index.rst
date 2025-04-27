@@ -10,14 +10,7 @@ Welcome to the documentation!
    overview
    architecture
    communication
-   SLAM
-   path_planner
-   navigation_controller
-   speaker_service
-   triage_system
-   structural_risk_assessment
-   victim_detection
-   real_time_alerts
+   components
    integration_testing
    
 
